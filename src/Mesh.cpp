@@ -544,11 +544,10 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 
 
 
-	auto BuildLaplacianMatrixTriplest = [this,gama,NVertices,uniform]( ) {
+	auto BuildLaplacianMatrixTriplest = [gama,NVertices,uniform](const OpenMesh::Mesh& HalfEdgeMesh) {
 		std::vector<Trip> tripletList;
 		tripletList.reserve(3 * NVertices * NVertices);
 
-		auto HalfEdgeMesh = this->mesh();
 
 		auto computeLij_uniform = [NVertices, &HalfEdgeMesh](int i, int j)->double {
 
@@ -638,10 +637,9 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 	};
 
 
-    auto BuildJacobiMatrix = [ NVertices,theta,gama,lambda,uniform, this]( const  std::vector<Trip>& LaplacianTripList) {
+    auto BuildJacobiMatrix = [ NVertices,theta,gama,lambda,uniform](const OpenMesh::Mesh& HalfEdgeMesh, const  std::vector<Trip>& LaplacianTripList) {
         std::vector<Trip> tripletList;
 		tripletList.reserve(3 * NVertices * NVertices);
-        auto HalfEdgeMesh = this->mesh();
         //smoothingNess= laplacianX
         tripletList = LaplacianTripList;
 
@@ -662,9 +660,8 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
     };
 
 
-	auto BuildXvector = [NVertices, this]()->Eigen::RowMatrixXd {
+	auto BuildXvector = [NVertices](const OpenMesh::Mesh& HalfEdgeMesh)->Eigen::RowMatrixXd {
 		Eigen::RowMatrixXd X_i(NVertices, 3);
-		const auto HalfEdgeMesh = this->mesh();
 		for (int i = 0; i < NVertices; i++)
 		{
 			Eigen::RowVector3d point = HalfEdgeMesh.point(OpenMesh::SmartVertexHandle(i, &HalfEdgeMesh));
@@ -675,7 +672,7 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 	};
 
 
-	auto BuildCVector = [this,NVertices](const  std::vector<Trip>& LaplacianTripList, Eigen::RowMatrixXd Xo, Eigen::RowMatrixXd Xc) {
+	auto BuildCVector = [NVertices](const  std::vector<Trip>& LaplacianTripList, Eigen::RowMatrixXd Xo, Eigen::RowMatrixXd Xc) {
 		
         Eigen::RowMatrixXd d(3 * NVertices, 3); 
         d *= 0;
@@ -686,14 +683,14 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 
 		d.block(0, 0, NVertices, 3) = LX.block(0, 0, NVertices, 3);
 
+        d.block(NVertices, 0, NVertices, 3) = Xo.block(0, 0, NVertices, 3) -Xc.block(0, 0, NVertices, 3);
 
-
-		for (int i = NVertices; i < 2 * NVertices; i++)
+        /*for (int i = NVertices; i < 2 * NVertices; i++)
 		{
             d.row(i) = Xc.row(i- NVertices) - Xo.row(i - NVertices);
 		}
 
-		/*	for (int i = 2 * NVertices; i < 3 * NVertices; i++)
+			for (int i = 2 * NVertices; i < 3 * NVertices; i++)
 			{
 			d.row(i)={0,0,0};
 			}*/
@@ -702,25 +699,30 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 	};
 
 	
-    std::vector<Trip> L_trips= BuildLaplacianMatrixTriplest();
-    SpMat Jac = BuildJacobiMatrix(L_trips);
-    Eigen::RowMatrixXd X_o = BuildXvector();
+ 
+
+    Eigen::RowMatrixXd X_o = BuildXvector(mMesh);
     Eigen::RowMatrixXd X_c = X_o;
+  
 
-    Eigen::RowMatrixXd C = BuildCVector(L_trips,X_o,X_c);
 
-    //solving:
-	SpMat A =  (Jac.transpose() * Jac).pruned();
-
+	std::vector<Trip> L_trips = BuildLaplacianMatrixTriplest(mMesh);
+	SpMat Jac = BuildJacobiMatrix(mMesh,L_trips);
+	SpMat A = (Jac.transpose() * Jac).pruned();
 	Eigen::SimplicialLDLT<SpMat> solver(A);
-	Eigen::RowMatrixXd b = -1.0 * Jac.transpose() *  C ;
-	Eigen::RowMatrixXd Delta_V= solver.solve(b);
-    X_c = Delta_V+ X_c;
-
+	Eigen::RowMatrixXd C = BuildCVector(L_trips, X_o, X_c);
+	//solving:
+	Eigen::RowMatrixXd b = -1.0 * Jac.transpose() * C;
+	Eigen::RowMatrixXd Delta_V = solver.solve(b);
+	X_c = Delta_V + X_c;
+    //update
 	for (OpenMesh::Mesh::VertexIter v_it = mMesh.vertices_begin();
 		v_it != mMesh.vertices_end(); ++v_it)
 	{
 		OpenMesh::Mesh::Point p = X_c.row(v_it->idx());
 		mMesh.set_point(*v_it, p);
 	}
+	
+
+	
 }

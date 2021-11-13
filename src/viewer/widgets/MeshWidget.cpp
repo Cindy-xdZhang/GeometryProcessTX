@@ -837,10 +837,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
             static double slambda = 0.00001;
             static bool uniform = false;
 
-            static double lambda = 0.01;
+            static double lambda = 0.1;
             static double mu = 0.01;
-			static double gama = 0.01;
-			static double theta = 0.01;
+			static double gama = 0.001;
+			static double theta = 0.000001;
          
             
             ImGui::Checkbox("Uniform", &uniform);
@@ -855,9 +855,9 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
             ImGui::InputDouble("lambda", &slambda,0.000001,0,"%.12f");
 
 
-			ImGui::InputDouble("w-Ev0", &lambda, 0.0001, 0, "%.8f");
-			ImGui::InputDouble("w-Evc", &theta, 0.00001, 0, "%.8f");
-			ImGui::InputDouble("w-Ef", &gama, 0.0001, 0, "%.8f");
+			ImGui::InputDouble("w-Ev0", &lambda, 0.1, 0, "%.8f");
+			ImGui::InputDouble("w-Evc", &theta, 0.000001, 0, "%.8f");
+			ImGui::InputDouble("w-Ef", &gama, 0.01, 0, "%.8f");
 			ImGui::InputDouble("w-Et", &mu, 0.0001, 0, "%.8f");
 
 			if (ImGui::Button("Discrete Gaussian Curvatures", ImVec2(-1, 0)))
@@ -897,7 +897,11 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 			if (ImGui::Button("Energy Smoothing", ImVec2(-1, 0)))
 			{
 		        //double lambda, double mu, double gama, double theta, int iterations = 5, bool uniform = false
-				mLoader->mesh(index)->OptimizingSmoothing(lambda,mu,gama, theta, iterationPerClick, uniform);
+                int  iter = iterationPerClick;
+                while (iter--)
+                {
+                    mLoader->mesh(index)->OptimizingSmoothing(lambda, mu, gama, theta, 1, uniform);
+                }
 				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 
 
