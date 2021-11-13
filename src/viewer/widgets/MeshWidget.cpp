@@ -774,12 +774,12 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
                     //TODO: Tell convex or concave
 					Eigen::Vector3d vecN1 = HalfEdgeMesh.normal(point1);
 					Eigen::Vector3d vecN2 = HalfEdgeMesh.normal(point2);
+					Eigen::Vector3d vecP3plusP4 = 0.5 * (p3 + p4);
+					Eigen::Vector3d vecM = 0.5*(p1+p2) - vecP3plusP4;
                     Eigen::Vector3d EdgeN = (vecN1 + vecN2) / 2;
-                    Eigen::Vector3d  det1 = (n1.cross(EdgeN) );
-                    Eigen::Vector3d  det2 = (n1.cross(n2));
-                    double convex = det1.dot(det2);
+                    double convex = EdgeN.dot(vecM);
                     double aflphae = 0;
-                    if (convex>0)[[likely]]
+                    if (convex<0)[[likely]]
                     {
                         aflphae= Angle;
                     }
@@ -900,7 +900,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
                 int  iter = iterationPerClick;
                 while (iter--)
                 {
-                    mLoader->mesh(index)->OptimizingSmoothing(lambda, mu, gama, theta, 1, uniform);
+                   // mLoader->mesh(index)->OptimizingSmoothing(lambda, mu, gama, theta, 1, uniform);
                 }
 				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 
