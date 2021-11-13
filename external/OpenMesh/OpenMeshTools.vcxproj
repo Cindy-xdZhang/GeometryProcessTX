@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{116A6260-A23D-3ACF-9507-05DF98C5F2D7}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>OpenMesh Tools</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OpenMeshToolsd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OpenMeshTools</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;INCLUDE_TEMPLATES;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;INCLUDE_TEMPLATES;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="src/OpenMesh/Tools/CMakeLists.txt">
+      <StdOutEncoding>UTF-8</StdOutEncoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule src/OpenMesh/Tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -S. -B./build --check-stamp-file ./build/src/OpenMesh/Tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\AddFileDependencies.cmake;.\cmake\ACGCommon.cmake;.\cmake\ACGCompiler.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\build\src\OpenMesh\Tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule src/OpenMesh/Tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -S. -B./build --check-stamp-file ./build/src/OpenMesh/Tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\AddFileDependencies.cmake;.\cmake\ACGCommon.cmake;.\cmake\ACGCompiler.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\build\src\OpenMesh\Tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\OpenMesh\Tools\Decimater\Observer.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\Utils\Gnuplot.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\Utils\Timer.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\Utils\conio.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VFront.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchy.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchyNodeIndex.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchyWindow.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\ViewingParameters.cc" />
+    <ClCompile Include="src\OpenMesh\Tools\Utils\getopt.c" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\BaseDecimaterT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\BaseDecimaterT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\CollapseInfoT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\DecimaterT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\DecimaterT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\McDecimaterT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\McDecimaterT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\MixedDecimaterT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\MixedDecimaterT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModAspectRatioT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModAspectRatioT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModBaseT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModEdgeLengthT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModEdgeLengthT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModHausdorffT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModHausdorffT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModIndependentSetsT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModNormalDeviationT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModNormalFlippingT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModProgMeshT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModProgMeshT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModQuadricT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModQuadricT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModRoundnessT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\Observer.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Dualizer\meshDualT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\ArrayKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\AttribKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\bindT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\color_cast.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\PropertyKernel.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\PropertyT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\Traits.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\TriMesh_OSGArrayKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\VectorAdapter.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\SmartTagger\SmartTaggerT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\SmartTagger\SmartTaggerT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\JacobiLaplaceSmootherT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\JacobiLaplaceSmootherT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\LaplaceSmootherT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\LaplaceSmootherT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\SmootherT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\SmootherT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\smooth_mesh.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeTraits.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RuleInterfaceT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RulesT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RulesT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\Traits.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeTraits.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CatmullClarkT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CatmullClarkT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CompositeLoopT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CompositeSqrt3T.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\LongestEdgeT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\LoopT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\MidpointT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\ModifiedButterFlyT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Sqrt3InterpolatingSubdividerLabsikGreinerT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Sqrt3T.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\SubdividerT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Config.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\getopt.h" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\GLConstAsString.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Gnuplot.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\HeapT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\MeshCheckerT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\MeshCheckerT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\NumLimitsT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\StripifierT.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\StripifierT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\TestingFramework.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Timer.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\Utils\conio.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\MeshTraits.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\StreamingDef.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VFront.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchy.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyNode.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyNodeIndex.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyWindow.hh" />
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\ViewingParameters.hh" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

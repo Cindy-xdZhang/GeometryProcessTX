@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{00a1fbe8-9f1d-4ac6-852e-dbf56eba9a80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewer">
+      <UniqueIdentifier>{698e0e15-f91e-4da3-9c8c-10f4d373d41d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewer\imgui">
+      <UniqueIdentifier>{8586f946-182c-45c8-96bc-ce9a59335cae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewer\opengl">
+      <UniqueIdentifier>{679df90b-c569-4c4f-9a3d-a98e784a1a2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\viewer">
+      <UniqueIdentifier>{1d3e16b0-750f-4acd-8b33-08abf3fcbee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\viewer\opengl">
+      <UniqueIdentifier>{ec5c8d9a-0813-40f1-b2cb-29d62b426a94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewer\widgets">
+      <UniqueIdentifier>{3819e191-db4b-4850-907a-dc2c33536a98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\viewer\widgets">
+      <UniqueIdentifier>{3cd1d251-b416-43e4-81e9-60e093777c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\viewer\plugins">
+      <UniqueIdentifier>{86fa8a7f-53fc-4bb3-a323-7929557a8d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{81a7f4b6-63fd-40c5-bf4e-723f938d41ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\viewer\plugins">
+      <UniqueIdentifier>{d6d4ffbf-50f7-4299-9a7b-27857866df4e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\Viewer.h">
+      <Filter>Header Files\viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\ViewerCore.h">
+      <Filter>Header Files\viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\ViewerData.h">
+      <Filter>Header Files\viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\ViewerPlugin.h">
+      <Filter>Header Files\viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\ViewerWidget.h">
+      <Filter>Header Files\viewer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\opengl\MeshGL.h">
+      <Filter>Header Files\viewer\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\imgui\imgui_fonts_droid_sans.h">
+      <Filter>Header Files\viewer\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\imgui\ImGuiDragUInt.h">
+      <Filter>Header Files\viewer\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\imgui\ImGuiHelpers.h">
+      <Filter>Header Files\viewer\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\imgui\ImGuiTraits.h">
+      <Filter>Header Files\viewer\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\camera.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\color.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\colormap.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\constants.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Eigen.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\maths.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\OpenMesh.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\quaternions.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\stl.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\system.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\timer.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\VeraSansMono.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\widgets\MainWidget.h">
+      <Filter>Header Files\viewer\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\widgets\MeshWidget.h">
+      <Filter>Header Files\viewer\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\plugins\LoaderPlugin.h">
+      <Filter>Header Files\viewer\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="include\viewer\plugins\WidgetsPlugin.h">
+      <Filter>Header Files\viewer\plugins</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\viewer\Viewer.cpp">
+      <Filter>Source Files\viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\ViewerCore.cpp">
+      <Filter>Source Files\viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\ViewerData.cpp">
+      <Filter>Source Files\viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\ViewerPlugin.cpp">
+      <Filter>Source Files\viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\ViewerWidget.cpp">
+      <Filter>Source Files\viewer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\opengl\MeshGL.cpp">
+      <Filter>Source Files\viewer\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\OpenMesh.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\widgets\MainWidget.cpp">
+      <Filter>Source Files\viewer\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\widgets\MeshWidget.cpp">
+      <Filter>Source Files\viewer\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\plugins\LoaderPlugin.cpp">
+      <Filter>Source Files\viewer\plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="src\viewer\plugins\WidgetsPlugin.cpp">
+      <Filter>Source Files\viewer\plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

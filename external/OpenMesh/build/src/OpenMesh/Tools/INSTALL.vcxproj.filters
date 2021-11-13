@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhanx0o\Documents\sources\cs272-framework-cpp\external\OpenMesh\build\CMakeFiles\888d6d810b6afcf2cc4495bd1768dbc0\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{60013727-657A-3B37-B133-417A9E548C49}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

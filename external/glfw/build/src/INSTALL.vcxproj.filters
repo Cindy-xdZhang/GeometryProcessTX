@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\zhanx0o\Documents\sources\cs272-framework-cpp\external\glfw\build\CMakeFiles\5ccbb928de45485d5c0c695395dc8e71\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5DCEDFF7-B9BD-3502-98E0-29828E756916}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

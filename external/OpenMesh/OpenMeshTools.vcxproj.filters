@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\OpenMesh\Tools\Decimater\Observer.cc">
+      <Filter>Source Files\Decimater</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\Utils\conio.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\Utils\getopt.c">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\Utils\Gnuplot.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\Utils\Timer.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VFront.cc">
+      <Filter>Source Files\VDPM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchy.cc">
+      <Filter>Source Files\VDPM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchyNodeIndex.cc">
+      <Filter>Source Files\VDPM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\VHierarchyWindow.cc">
+      <Filter>Source Files\VDPM</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Tools\VDPM\ViewingParameters.cc">
+      <Filter>Source Files\VDPM</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\BaseDecimaterT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\BaseDecimaterT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\CollapseInfoT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\DecimaterT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\DecimaterT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\McDecimaterT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\McDecimaterT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\MixedDecimaterT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\MixedDecimaterT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModAspectRatioT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModAspectRatioT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModBaseT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModEdgeLengthT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModEdgeLengthT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModHausdorffT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModHausdorffT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModIndependentSetsT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModNormalDeviationT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModNormalFlippingT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModProgMeshT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModProgMeshT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModQuadricT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModQuadricT_impl.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\ModRoundnessT.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Decimater\Observer.hh">
+      <Filter>Header Files\Decimater</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Dualizer\meshDualT.hh">
+      <Filter>Header Files\Dualizer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\ArrayKernelT.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\AttribKernelT.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\bindT.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\color_cast.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\PropertyKernel.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\PropertyT.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\Traits.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\TriMesh_OSGArrayKernelT.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Kernel_OSG\VectorAdapter.hh">
+      <Filter>Header Files\Kernel_OSG</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\SmartTagger\SmartTaggerT.hh">
+      <Filter>Header Files\SmartTagger</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\SmartTagger\SmartTaggerT_impl.hh">
+      <Filter>Header Files\SmartTagger</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\JacobiLaplaceSmootherT.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\JacobiLaplaceSmootherT_impl.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\LaplaceSmootherT.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\LaplaceSmootherT_impl.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\SmootherT.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\SmootherT_impl.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Smoother\smooth_mesh.hh">
+      <Filter>Header Files\Smoother</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Config.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\conio.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\getopt.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\GLConstAsString.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Gnuplot.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\HeapT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\MeshCheckerT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\MeshCheckerT_impl.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\NumLimitsT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\StripifierT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\StripifierT_impl.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\TestingFramework.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Utils\Timer.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\MeshTraits.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\StreamingDef.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VFront.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchy.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyNode.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyNodeIndex.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\VHierarchyWindow.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\VDPM\ViewingParameters.hh">
+      <Filter>Header Files\VDPM</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CatmullClarkT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CatmullClarkT_impl.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CompositeLoopT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\CompositeSqrt3T.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\LongestEdgeT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\LoopT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\MidpointT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\ModifiedButterFlyT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Sqrt3InterpolatingSubdividerLabsikGreinerT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Sqrt3T.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\SubdividerT.hh">
+      <Filter>Header Files\Subdivider\Uniform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RuleInterfaceT.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RulesT.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\RulesT_impl.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\Traits.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeT.hh">
+      <Filter>Header Files\Subdivider\Uniform\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeT_impl.hh">
+      <Filter>Header Files\Subdivider\Uniform\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Uniform\Composite\CompositeTraits.hh">
+      <Filter>Header Files\Subdivider\Uniform\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeT.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeT_impl.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Tools\Subdivider\Adaptive\Composite\CompositeTraits.hh">
+      <Filter>Header Files\Subdivider\Adaptive\Composite</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src/OpenMesh/Tools/CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{1D3BE5A9-16CB-3A9A-9C21-E068202BAF5D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D7455D1D-795F-3226-B864-77D12DCAEDED}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decimater">
+      <UniqueIdentifier>{bbf62280-76d2-48ce-a698-edbb3f0ecade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decimater">
+      <UniqueIdentifier>{547dc3e8-a866-46af-b03e-2682f2755ea7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dualizer">
+      <UniqueIdentifier>{282518f7-0874-4209-a794-9b7e8ce64d0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Kernel_OSG">
+      <UniqueIdentifier>{33b1a472-0540-45b6-84c8-b4b6eae33d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SmartTagger">
+      <UniqueIdentifier>{0af8f7f4-8e3c-48d3-9296-5d1a97ecd2b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Smoother">
+      <UniqueIdentifier>{654f16c0-6cc8-4a9f-be5a-39fec806bc6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subdivider">
+      <UniqueIdentifier>{a3c9a656-b159-4dd9-9bfc-ade31ce5e584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{5d103edd-71be-4bcd-9ad5-21396970b3e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{751f029a-7c93-4d2d-aff4-9b22a02df41d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\VDPM">
+      <UniqueIdentifier>{e6bddcdf-ab72-46d7-9a5f-b839fc18b19f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VDPM">
+      <UniqueIdentifier>{db204b93-2d83-4806-95fd-a8d55d0a5439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subdivider\Adaptive">
+      <UniqueIdentifier>{5a5c84c1-4b48-4783-948d-ea623ca91744}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subdivider\Uniform">
+      <UniqueIdentifier>{41c33995-fa2f-4c89-9ed6-35e0008b9796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subdivider\Adaptive\Composite">
+      <UniqueIdentifier>{29d0cb04-af90-47e8-9bb1-d265d2971e18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subdivider\Uniform\Composite">
+      <UniqueIdentifier>{8c123d75-e056-4bc0-bb37-675d0ff6deb0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

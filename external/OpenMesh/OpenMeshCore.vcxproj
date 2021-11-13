@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8ECFFDD6-AB00-344F-950D-A4A041DCE5FE}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>OpenMesh Core</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OpenMeshCored</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OpenMeshCore</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;INCLUDE_TEMPLATES;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;INCLUDE_TEMPLATES;_USE_MATH_DEFINES;NOMINMAX;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="src/OpenMesh/Core/CMakeLists.txt">
+      <StdOutEncoding>UTF-8</StdOutEncoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule src/OpenMesh/Core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -S. -B./build --check-stamp-file ./build/src/OpenMesh/Core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\AddFileDependencies.cmake;.\cmake\ACGCommon.cmake;.\cmake\ACGCompiler.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\build\src\OpenMesh\Core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule src/OpenMesh/Core/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -S. -B./build --check-stamp-file ./build/src/OpenMesh/Core/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\AddFileDependencies.cmake;.\cmake\ACGCommon.cmake;.\cmake\ACGCompiler.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\build\src\OpenMesh\Core\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\OpenMesh\Core\IO\BinaryHelper.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\IOManager.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\OMFormat.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\BaseReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OBJReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OFFReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OMReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\PLYReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\STLReader.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\BaseWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OBJWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OFFWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OMWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\PLYWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\STLWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\VTKWriter.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Mesh\ArrayKernel.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Mesh\BaseKernel.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Mesh\PolyConnectivity.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Mesh\SmartHandles.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Mesh\TriConnectivity.cc" />
+    <ClCompile Include="src\OpenMesh\Core\System\omstream.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Utils\BaseProperty.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Utils\Endian.cc" />
+    <ClCompile Include="src\OpenMesh\Core\Utils\RandomNumberGenerator.cc" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Config.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\EigenVectorT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\LoopSchemeMaskT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\MathDefs.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\NormalConeT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\NormalConeT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Plane3d.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\QuadricT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Vector11T.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\VectorT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Geometry\VectorT_inc.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\BinaryHelper.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\IOInstances.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\IOManager.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\MeshIO.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\OFFFormat.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\OMFormat.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\OMFormatT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\Options.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_binary.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_binary_spec.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_rbo.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_store.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_types.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\StoreRestore.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\exporter\BaseExporter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\exporter\ExporterT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\importer\BaseImporter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\importer\ImporterT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\BaseReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OBJReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OFFReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OMReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\PLYReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\STLReader.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\BaseWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OBJWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OFFWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OMWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\PLYWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\STLWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\VTKWriter.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayItems.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayKernel.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayKernelT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\AttribKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Attributes.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\BaseKernel.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\BaseMesh.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Casts.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\CirculatorsT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\DefaultPolyMesh.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\DefaultTriMesh.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\FinalMeshItemsT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Handles.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\IteratorsT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyConnectivity.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyConnectivity_inline_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMeshT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMeshT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMesh_ArrayKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\SmartHandles.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\SmartRange.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Status.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Tags.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Traits.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriConnectivity.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMeshT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMeshT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMesh_ArrayKernelT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\circulators_header.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\circulators_template.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\footer.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\iterators_header.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\iterators_template.hh" />
+    <ClInclude Include="src\OpenMesh\Core\System\config.h" />
+    <ClInclude Include="src\OpenMesh\Core\System\OpenMeshDLLMacros.hh" />
+    <ClInclude Include="src\OpenMesh\Core\System\compiler.hh" />
+    <ClInclude Include="src\OpenMesh\Core\System\config.hh" />
+    <ClInclude Include="src\OpenMesh\Core\System\mostream.hh" />
+    <ClInclude Include="src\OpenMesh\Core\System\omstream.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Templates\bla.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Templates\blaT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\AutoPropertyHandleT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\BaseProperty.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\Endian.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\GenProg.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\HandleToPropHandle.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\Noncopyable.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\Property.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\PropertyContainer.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\PropertyManager.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\RandomNumberGenerator.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\SingletonT.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\SingletonT_impl.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\color_cast.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\typename.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\vector_cast.hh" />
+    <ClInclude Include="src\OpenMesh\Core\Utils\vector_traits.hh" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

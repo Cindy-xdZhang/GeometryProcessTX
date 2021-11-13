@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\utils\camera.h" />
+    <ClInclude Include="include\utils\color.h" />
+    <ClInclude Include="include\utils\colormap.h" />
+    <ClInclude Include="include\utils\constants.h" />
+    <ClInclude Include="include\utils\Eigen.h" />
+    <ClInclude Include="include\utils\maths.h" />
+    <ClInclude Include="include\utils\OpenMesh.h" />
+    <ClInclude Include="include\utils\quaternions.h" />
+    <ClInclude Include="include\utils\stl.h" />
+    <ClInclude Include="include\utils\system.h" />
+    <ClInclude Include="include\utils\timer.h" />
+    <ClInclude Include="include\utils\VeraSansMono.h" />
+    <ClInclude Include="include\viewer\imgui\ImGuiDragUInt.h" />
+    <ClInclude Include="include\viewer\imgui\ImGuiHelpers.h" />
+    <ClInclude Include="include\viewer\imgui\ImGuiTraits.h" />
+    <ClInclude Include="include\viewer\imgui\imgui_fonts_droid_sans.h" />
+    <ClInclude Include="include\viewer\opengl\MeshGL.h" />
+    <ClInclude Include="include\viewer\plugins\LoaderPlugin.h" />
+    <ClInclude Include="include\viewer\plugins\WidgetsPlugin.h" />
+    <ClInclude Include="include\viewer\Viewer.h" />
+    <ClInclude Include="include\viewer\ViewerCore.h" />
+    <ClInclude Include="include\viewer\ViewerData.h" />
+    <ClInclude Include="include\viewer\ViewerPlugin.h" />
+    <ClInclude Include="include\viewer\ViewerWidget.h" />
+    <ClInclude Include="include\viewer\widgets\MainWidget.h" />
+    <ClInclude Include="include\viewer\widgets\MeshWidget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\utils\OpenMesh.cpp" />
+    <ClCompile Include="src\viewer\opengl\MeshGL.cpp" />
+    <ClCompile Include="src\viewer\plugins\LoaderPlugin.cpp" />
+    <ClCompile Include="src\viewer\plugins\WidgetsPlugin.cpp" />
+    <ClCompile Include="src\viewer\Viewer.cpp" />
+    <ClCompile Include="src\viewer\ViewerCore.cpp" />
+    <ClCompile Include="src\viewer\ViewerData.cpp" />
+    <ClCompile Include="src\viewer\ViewerPlugin.cpp" />
+    <ClCompile Include="src\viewer\ViewerWidget.cpp" />
+    <ClCompile Include="src\viewer\widgets\MainWidget.cpp" />
+    <ClCompile Include="src\viewer\widgets\MeshWidget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="external\glad\glad.vcxproj">
+      <Project>{3ad9e217-075f-4d3c-b47e-84fab850975e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\glfw\glfw.vcxproj">
+      <Project>{f19fe24b-b3b1-3687-871b-f833e2158b9f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\imgui\imgui.vcxproj">
+      <Project>{87cb5d04-bc0b-35d5-83a6-af8785e1366b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\eigen\eigen.vcxproj">
+      <Project>{34274188-4f01-45fc-876b-f66e282826e1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\OpenMesh\OpenMeshCore.vcxproj">
+      <Project>{8ecffdd6-ab00-344f-950d-a4a041dce5fe}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\OpenMesh\OpenMeshTools.vcxproj">
+      <Project>{116a6260-a23d-3acf-9507-05df98c5f2d7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="external\stb\stb.vcxproj">
+      <Project>{dc4f2cc0-6621-45a2-a07c-378a07161e42}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <ProjectDirectory>$(ProjectDir.Replace('\', '/'))</ProjectDirectory>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B89F64BB-5D5D-405F-A69C-5A84DAEAA16C}</ProjectGuid>
+    <RootNamespace>cs272</RootNamespace>
+    <ProjectName>cs272</ProjectName>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheet.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;WIN64;PROJECT_DIRECTORY="$(ProjectDirectory)";_DEBUG;_CONSOLE;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)external\glad\include;$(ProjectDir)external\glfw\include;$(ProjectDir)external\imgui;$(ProjectDir)external\eigen;$(ProjectDir)external\stb;$(ProjectDir)external\OpenMesh\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WIN64;PROJECT_DIRECTORY="$(ProjectDirectory)";NDEBUG;_CONSOLE;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)external\glad\include;$(ProjectDir)external\glfw\include;$(ProjectDir)external\imgui;$(ProjectDir)external\eigen;$(ProjectDir)external\stb;$(ProjectDir)external\OpenMesh\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

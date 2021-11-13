@@ -1,0 +1,6 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.20/Modules/FindDoxygen.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/FindPackageMessage.cmake
+C:/Users/zhanx0o/Documents/sources/cs272-framework-cpp/external/OpenMesh/Doc/CMakeLists.txt
+C:/Users/zhanx0o/Documents/sources/cs272-framework-cpp/external/OpenMesh/cmake/ACGDoxygen.cmake

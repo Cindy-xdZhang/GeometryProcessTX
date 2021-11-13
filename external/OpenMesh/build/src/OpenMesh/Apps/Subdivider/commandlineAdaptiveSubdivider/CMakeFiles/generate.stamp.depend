@@ -1,0 +1,5 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.20/Modules/AddFileDependencies.cmake
+C:/Users/zhanx0o/Documents/sources/cs272-framework-cpp/external/OpenMesh/cmake/ACGCommon.cmake
+C:/Users/zhanx0o/Documents/sources/cs272-framework-cpp/external/OpenMesh/cmake/ACGCompiler.cmake
+C:/Users/zhanx0o/Documents/sources/cs272-framework-cpp/external/OpenMesh/src/OpenMesh/Apps/Subdivider/commandlineAdaptiveSubdivider/CMakeLists.txt

@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\OpenMesh\Core\Utils\BaseProperty.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Utils\Endian.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Utils\RandomNumberGenerator.cc">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\System\omstream.cc">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Mesh\ArrayKernel.cc">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Mesh\BaseKernel.cc">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Mesh\SmartHandles.cc">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Mesh\PolyConnectivity.cc">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\Mesh\TriConnectivity.cc">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\BinaryHelper.cc">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\IOManager.cc">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\OMFormat.cc">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\BaseReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OBJReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OFFReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\OMReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\PLYReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\reader\STLReader.cc">
+      <Filter>Source Files\IO\reader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\BaseWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OBJWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OFFWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\OMWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\PLYWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\STLWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenMesh\Core\IO\writer\VTKWriter.cc">
+      <Filter>Source Files\IO\writer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\OpenMesh\Core\Templates\bla.hh">
+      <Filter>Header Files\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Templates\blaT_impl.hh">
+      <Filter>Header Files\Templates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\AutoPropertyHandleT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\BaseProperty.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\color_cast.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\Endian.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\GenProg.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\HandleToPropHandle.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\Noncopyable.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\Property.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\PropertyContainer.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\PropertyManager.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\RandomNumberGenerator.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\SingletonT.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\SingletonT_impl.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\typename.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\vector_cast.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Utils\vector_traits.hh">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\compiler.hh">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\config.hh">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\mostream.hh">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\omstream.hh">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\OpenMeshDLLMacros.hh">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\System\config.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Config.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\EigenVectorT.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\LoopSchemeMaskT.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\MathDefs.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\NormalConeT.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\NormalConeT_impl.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Plane3d.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\QuadricT.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\Vector11T.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\VectorT.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Geometry\VectorT_inc.hh">
+      <Filter>Header Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayItems.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayKernel.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\ArrayKernelT_impl.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\AttribKernelT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Attributes.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\BaseKernel.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\BaseMesh.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Casts.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\CirculatorsT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\DefaultPolyMesh.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\DefaultTriMesh.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\FinalMeshItemsT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Handles.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyConnectivity.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyConnectivity_inline_impl.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMesh_ArrayKernelT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMeshT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\PolyMeshT_impl.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\SmartHandles.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\SmartRange.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Status.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Tags.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\Traits.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriConnectivity.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMesh_ArrayKernelT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMeshT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\TriMeshT_impl.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\circulators_header.hh">
+      <Filter>Header Files\Mesh\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\circulators_template.hh">
+      <Filter>Header Files\Mesh\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\footer.hh">
+      <Filter>Header Files\Mesh\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\iterators_header.hh">
+      <Filter>Header Files\Mesh\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\gen\iterators_template.hh">
+      <Filter>Header Files\Mesh\gen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\BinaryHelper.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\IOInstances.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\IOManager.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\MeshIO.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\OFFFormat.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\OMFormat.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\OMFormatT_impl.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\Options.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_binary.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_binary_spec.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_rbo.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_store.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\SR_types.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\StoreRestore.hh">
+      <Filter>Header Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\exporter\BaseExporter.hh">
+      <Filter>Header Files\IO\exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\exporter\ExporterT.hh">
+      <Filter>Header Files\IO\exporter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\importer\BaseImporter.hh">
+      <Filter>Header Files\IO\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\importer\ImporterT.hh">
+      <Filter>Header Files\IO\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\Mesh\IteratorsT.hh">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\BaseReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OBJReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OFFReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\OMReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\PLYReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\reader\STLReader.hh">
+      <Filter>Header Files\IO\reader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\BaseWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OBJWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OFFWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\OMWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\PLYWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\STLWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenMesh\Core\IO\writer\VTKWriter.hh">
+      <Filter>Header Files\IO\writer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src/OpenMesh/Core/CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{51F677D3-CC64-303F-9C5B-18C0F75E66C8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E98FA255-483F-3EAF-9972-CC0C8159D9F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Geometry">
+      <UniqueIdentifier>{eb94f05e-f08e-466f-b9ac-fd81b8eb7de9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO">
+      <UniqueIdentifier>{2cd82b05-8d55-4311-aada-ac8db2c42b85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mesh">
+      <UniqueIdentifier>{e858cfcd-8e58-4b30-aabf-115904d6a070}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Templates">
+      <UniqueIdentifier>{d246e2d2-3eb6-4aed-ad80-363b29eb82a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{18610dbe-ec40-47c8-a588-25a7ead6ecb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{d0718aa5-0773-43eb-91ba-b5962c3a53f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mesh">
+      <UniqueIdentifier>{fb7d5090-3d9d-4697-9c3a-5261e8748797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{4794f23b-b071-4ba4-a886-3dbeedb1731a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{f0716bb8-153a-4778-b63c-e2bb21298b80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{82a733f0-b4e2-43e5-a655-52b97bb152d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mesh\gen">
+      <UniqueIdentifier>{2d7caf01-df07-470d-8498-8ed37564da95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO\reader">
+      <UniqueIdentifier>{be1709a6-ee3c-4ae9-949f-fe9e700a5771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO\writer">
+      <UniqueIdentifier>{ef6c1674-9796-4105-b54d-4ac6b9b1dc70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO\exporter">
+      <UniqueIdentifier>{d916db95-1928-48c4-afab-2d83e40284ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO\importer">
+      <UniqueIdentifier>{ce667713-29b5-495a-9705-f236f831765c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO\reader">
+      <UniqueIdentifier>{3e82ef5f-1f0b-4b33-8a8d-d63dc7c2c5c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO\writer">
+      <UniqueIdentifier>{58d931f0-3add-4755-b40f-ca2eada9ef17}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
