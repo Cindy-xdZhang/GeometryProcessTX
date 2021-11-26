@@ -160,7 +160,6 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
         ImGui::Spacing();
 
 
-
 #ifdef PROJ1
         auto GetRotationMatrix = [](Eigen::Vector3d normalDir) {
 
@@ -444,10 +443,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 
 
 
-                DataForDrawAsymptoticDir.add_edges(P1, P2, ColorRed);
+              /*  DataForDrawAsymptoticDir.add_edges(P1, P2, ColorRed);
                 DataForDrawAsymptoticDir.add_edges(P1, P3, ColorGreen);
                 DataForDrawAsymptoticDir.add_edges(P1, 2 * P1 - P2, ColorRed);
-                DataForDrawAsymptoticDir.add_edges(P1, 2 * P1 - P3, ColorGreen);
+                DataForDrawAsymptoticDir.add_edges(P1, 2 * P1 - P3, ColorGreen);*/
                 return curvatures;
         };
         // Curvatures
@@ -586,7 +585,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 
                 // TODO: compute curvatures here!
                 Eigen::MatrixXd resCurvatures= GaussianCurvatureComputation(mLoader->mesh(index), sizeNeighbors, mViewer->data(index));
-
+               
+                const double caxis_min = resCurvatures.minCoeff();
+				const double caxis_max = resCurvatures.maxCoeff();
+				std::cout << "Max K= " << caxis_max << "Min K= " << caxis_min << std::endl;
                 mViewer->data(index).set_data(resCurvatures);
 
             
@@ -597,7 +599,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 			{
 				// TODO: compute curvatures here!
 				Eigen::MatrixXd resCurvatures = MeanCurvatureComputation(mLoader->mesh(index), sizeNeighbors);
-
+      
 				mViewer->data(index).set_data(resCurvatures);
 			}
 
@@ -605,7 +607,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
         }
 
 #endif
-
+#ifdef PROJ3
         //collect K neigbors, when K <N1 return N1 neighbors; otherwise return K from N1 AND N2 neighbors 
         auto CollectNeigbors = [](const Mesh* inputMesh, const size_t SizeNeighbor, OpenMesh::Mesh::VertexIter v_it)->std::vector<int> {
 
@@ -828,7 +830,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 		};
 
 
-		if (ImGui::CollapsingHeader("Project 2", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Project 3", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			static size_t sizeNeighbors = 5;
 			size_t sizeNeighborsMin = 1;
@@ -900,7 +902,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
                 int  iter = iterationPerClick;
                 while (iter--)
                 {
-                   // mLoader->mesh(index)->OptimizingSmoothing(lambda, mu, gama, theta, 1, uniform);
+                    mLoader->mesh(index)->OptimizingSmoothing(lambda, mu, gama, theta, 1, uniform);
                 }
 				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 
@@ -908,7 +910,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 			}
 
 
-#ifdef RENDERLEGEND
+
 			if (ImGui::Button("render legend", ImVec2(-1, 0)))
 			{
 				// TODO: compute curvatures here!
@@ -930,8 +932,56 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 				mViewer->data(index).set_data(resCurvatures);
 			}
 
-#endif
+
+
+
 		}
+
+#endif
+        if (ImGui::CollapsingHeader("Project 4", ImGuiTreeNodeFlags_DefaultOpen))
+        { 
+            size_t sizeNeighborsMin = 1;
+	        size_t sizeNeighborsMax = 50;
+            static size_t iterationPerClick = 5;
+
+            static double w_c1= 0.1;
+            static double w_c2 = 0.1;
+            static double w_c3 = 0.1;
+
+            static double w_normal = 0.01;
+            static double w_fairness = 0.01;
+
+
+
+
+            /*ImGui::Checkbox("Uniform", &uniform);
+
+            ImGui::DragScalar("size of neighbors", ImGuiDataType_U32, &sizeNeighbors,
+                1.0, &sizeNeighborsMin, &sizeNeighborsMax, "%d");
+            */
+
+			ImGui::DragScalar("iterationPerClick ", ImGuiDataType_U32, &iterationPerClick,
+				1.0, &sizeNeighborsMin, &sizeNeighborsMax, "%d");
+
+
+            ImGui::InputDouble("w-Con1", &w_c1, 0.0001, 0.1, "%.8f");
+            ImGui::InputDouble("w-Con2", &w_c2, 0.0001, 0.1, "%.8f");
+            ImGui::InputDouble("w-Con3", &w_c3, 0.0001, 0.1, "%.8f");
+			ImGui::InputDouble("w-Normal", &w_normal, 0.0001, 0.1, "%.8f");
+			ImGui::InputDouble("w-Fairness", &w_fairness, 0.0001, 0.1, "%.8f");
+			
+            if (ImGui::Button("Run Optimization", ImVec2(-1, 0)))
+			{
+                std::vector<double>Parameters = {(double)iterationPerClick,w_c1,w_c2,w_c3,w_normal,w_fairness};
+                mLoader->mesh(index)->OptimizingQuadMesh(Parameters);
+                mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+			}
+
+
+        }
+
+
+
     }
 
 	

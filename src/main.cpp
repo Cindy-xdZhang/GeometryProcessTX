@@ -44,7 +44,7 @@ int main(int /*argc*/, char* /*argv*/[])
 #ifdef PROJECT_DIRECTORY
     std::filesystem::path path =
             std::filesystem::path(PROJECT_DIRECTORY)
-                    .append("models").append("bunny.obj");
+                    .append("models").append("botanic_garden.obj");
     viewer.load(path.string());
 #endif
 
