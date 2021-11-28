@@ -2,6 +2,7 @@
 #include <iostream>
 #include "viewer/imgui/ImGuiHelpers.h"
 #include "OpenMesh/Tools/Subdivider/Uniform/CatmullClarkT.hh"
+
 #define mPI 3.141592653
 
 
@@ -947,10 +948,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
             static double w_c1= 0.1;
             static double w_c2 = 0.1;
             static double w_c3 = 0.1;
-
-            static double w_normal = 0.01;
+            static double w_torsion = 0.1;
+            static double w_normal = 0.1;
             static double w_fairness = 0.01;
-
+	
 
 
 
@@ -964,20 +965,94 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 				1.0, &sizeNeighborsMin, &sizeNeighborsMax, "%d");
 
 
-            ImGui::InputDouble("w-Con1", &w_c1, 0.0001, 0.1, "%.8f");
-            ImGui::InputDouble("w-Con2", &w_c2, 0.0001, 0.1, "%.8f");
-            ImGui::InputDouble("w-Con3", &w_c3, 0.0001, 0.1, "%.8f");
-			ImGui::InputDouble("w-Normal", &w_normal, 0.0001, 0.1, "%.8f");
-			ImGui::InputDouble("w-Fairness", &w_fairness, 0.0001, 0.1, "%.8f");
-			
+            ImGui::InputDouble("w-Con1", &w_c1, 0.01, 0.1, "%.4f");
+            ImGui::InputDouble("w-Con2", &w_c2, 0.01, 0.1, "%.4f");
+            ImGui::InputDouble("w-Con3", &w_c3, 0.01, 0.1, "%.4f");
+			ImGui::InputDouble("w-Normal", &w_normal, 0.01, 0.1, "%.4f");
+			ImGui::InputDouble("w-Fairness", &w_fairness, 0.01, 0.1, "%.4f");
+            ImGui::InputDouble("w-torsion", &w_torsion, 0.01, 0.1, "%.4f");
             if (ImGui::Button("Run Optimization", ImVec2(-1, 0)))
 			{
-                std::vector<double>Parameters = {(double)iterationPerClick,w_c1,w_c2,w_c3,w_normal,w_fairness};
+                std::vector<double>Parameters = {(double)iterationPerClick,w_c1,w_c2,w_c3,w_normal,w_fairness,w_torsion };
                 mLoader->mesh(index)->OptimizingQuadMesh(Parameters);
                 mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 			}
+			
+			if (ImGui::Button("Show SupportStructure", ImVec2(-1, 0)))
+			{
+                ViewerData& dataFordraw = mViewer->data(index);
+                const OpenMesh::Mesh& msh = mLoader->mesh(index)->mesh();  
+                const int Nedges = msh.n_edges();
+				Eigen::MatrixXd P0(Nedges, 3);
+				Eigen::MatrixXd P1(Nedges, 3);
+				Eigen::MatrixXd P2(Nedges, 3);
+                Eigen::MatrixXd P3(Nedges, 3);
+				Eigen::MatrixXd ColorRed(Nedges, 3);
+				Eigen::MatrixXd ColorGreen(Nedges, 3);
+                for (int i=0;i< Nedges;i++)
+                {
+					OpenMesh::SmartEdgeHandle eh(i, &(mLoader->mesh(index)->mesh()));
+					Eigen::Vector3d V0 = msh.point(eh.v0());
+					Eigen::Vector3d V1 = msh.point(eh.v1());
+					Eigen::Vector3d N0 = msh.normal(eh.v0());
+					Eigen::Vector3d N1 = msh.normal(eh.v1());
+					P0.row(i) = V0 ;
+					P1.row(i) = V1 ;
+                    P2.row(i) = V0 + 0.4 * N0.normalized();
+                    P3.row(i) = V1 + 0.4 * N1.normalized();
+					ColorRed.row(i) << 0, 0, 1;
+					ColorGreen.row(i) << 0, 1, 0;
+                }
+				
+
+                dataFordraw.add_edges(P2, P3, ColorRed);
+                dataFordraw.add_edges(P0, P2, ColorGreen);
+                dataFordraw.add_edges(P1, P3, ColorGreen);
+        
+			}
+		
+
+			if (ImGui::Button("clear SupportStructure", ImVec2(-1, 0)))
+			{
+				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+			}
 
 
+            static float biasx = 0;
+            static float biasy = 0;
+            static float biasz = 0;
+		
+            ImGui::DragScalar("Steer Vid ", ImGuiDataType_U32, &picked_vertex_index,
+				1.0, NULL, NULL, "%d");
+
+            if (ImGui::SliderFloat("bias_X", &biasx, -2.0, 2.0)){
+                if (picked_vertex_index > 0) {
+                    Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
+                    Eigen::Vector3d step = { biasx,biasy,biasz };
+                    mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
+
+                    mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+                }
+            }
+			if (ImGui::SliderFloat("bias_Y", &biasy, -2.0, 2.0)) {
+                if (picked_vertex_index > 0) {  
+                Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
+				Eigen::Vector3d step = { biasx,biasy,biasz };
+				mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
+
+				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+				}
+			}
+			if (ImGui::SliderFloat("bias_Z", &biasz, -2.0, 2.0)) {
+                if (picked_vertex_index >0) { 
+                Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
+				Eigen::Vector3d step = { biasx,biasy,biasz };
+				mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
+
+				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+				}
+			}
+		
         }
 
 
@@ -997,4 +1072,102 @@ end:
     ImGui::End();
 
     return dim;
+}
+
+bool MeshWidget::mouse_down(int button, int modifier)
+{
+    if (button==1)//middle button
+	{
+		down_mouse_x = current_mouse_x;
+		down_mouse_y = current_mouse_y;
+
+		Eigen::Vector3d point = pick(picked_face_index, picked_vertex_index);
+
+		return false;
+    } 
+    else
+	{
+		return false;
+    }
+	
+}
+
+//
+bool MeshWidget::mouse_move(int mouse_x, int mouse_y)
+{
+
+	current_mouse_x = mouse_x;
+	current_mouse_y = mouse_y;
+	return false;
+}
+Eigen::Vector3d MeshWidget::pick(int& face_index, int& vertex_index)
+{
+	geometry::Hit hit;
+
+	return  pick(face_index, vertex_index, hit);
+}
+
+Eigen::Vector3d MeshWidget::pick(int& face_index, int& vertex_index, geometry::Hit& hit)
+{
+	// Cast a ray in the view direction starting from the mouse position
+	double x = current_mouse_x;
+	double y = mViewer->core().viewport(3) - (double)current_mouse_y;
+
+	// Compute hits
+	Eigen::RowVector3d pt;
+	std::vector<geometry::Hit> hits;
+    int index = mViewer->selected_data_index;
+    auto quadMesh =mLoader->mesh(index)->mesh();
+    Eigen::MatrixXd V(quadMesh.n_vertices(),3);
+    Eigen::MatrixXd F(quadMesh.n_faces(), 4);
+	// Vertices
+	for (OpenMesh::Mesh::VertexIter v_it = quadMesh.vertices_begin();
+		v_it != quadMesh.vertices_end(); v_it++)
+	{
+		OpenMesh::Mesh::Point p = quadMesh.point(*v_it);
+		V(v_it->idx(), 0) = p[0];
+		V(v_it->idx(), 1) = p[1];
+		V(v_it->idx(), 2) = p[2];
+	}
+
+	// Faces
+	for (OpenMesh::Mesh::FaceIter f_it = quadMesh.faces_begin();
+		f_it != quadMesh.faces_end(); ++f_it)
+	{
+		int vi = 0;
+		for (OpenMesh::Mesh::ConstFaceVertexCCWIter fvi = quadMesh.cfv_ccwbegin(*f_it);
+			vi < 4 && fvi != quadMesh.cfv_ccwend(*f_it); ++fvi)
+		{
+			F(f_it->idx(), vi) = fvi->idx();
+			vi++;
+		}
+	}
+
+  
+	geometry::unproject_in_mesh(Eigen::Vector2f(x, y), mViewer->core().view,
+		mViewer->core().proj, mViewer->core().viewport,
+		V, F, pt, hits);
+
+	// Find vertex
+	int fi = -1;
+	int vi = -1;
+	if (!hits.empty())
+	{
+		hit = hits[0];
+		fi = hits[0].id;
+		Eigen::RowVector3d bc;
+		bc << 1.0 - hits[0].u - hits[0].v, hits[0].u, hits[0].v;
+		bc.maxCoeff(&vi);
+		vi =F(fi, vi);
+	/*	fi =FtoF(fi, 0);*/
+	}
+
+	face_index = fi;
+	vertex_index = vi;
+
+	std::cout << "selected_face = " << face_index
+		<< " - selected_vertex = " << vertex_index << std::endl;
+
+	return pt;
+
 }

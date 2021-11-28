@@ -11,9 +11,16 @@
 #include<Eigen/IterativeLinearSolvers>	
 #include<Eigen/SparseQR>
 #include<Eigen/SparseLU>
+//#include<algorithm>
+//#include<execution>
 typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> Trip;
 
+
+#define FillJacobi(cid,g,i,V3d) do {\
+Jac_tripletList.emplace_back(  Trip(  (cid), (UnknowsAddressTrans(g, i, 0)),  (V3d(0))  )); \
+Jac_tripletList.emplace_back(  Trip( (cid), (UnknowsAddressTrans(g, i, 1)), (V3d(1))   )); \
+Jac_tripletList.emplace_back(  Trip( (cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))   )); } while (0)
 
 
 size_t Mesh::counter = 0;
@@ -131,6 +138,10 @@ OpenMesh::Mesh& Mesh::mesh()
 OpenMesh::Mesh Mesh::mesh() const
 {
     return mMesh;
+}
+OpenMesh::Mesh Mesh::Originmesh() 
+{
+	return mMeshOriginal;
 }
 
 void Mesh::clean()
@@ -739,16 +750,17 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
          
 	const int NumberOfVertices= numVertices();
 	const int NumberOfFaces = mMesh.n_faces();
-
+	const int NumberOfEdges= mMesh.n_edges();
 	//condition1: 4*nf + 1*nf ,  ,unknow 3*nv+3*nf
 	//condition2: 4*nv + 1*nv  ,unknow 3*nv+3*nv
 	//condition3: nf  ,unknow 3*nv
+	// bonus: 3 ne, unknow: ne
 	//->Jacobi:  4*nf + 1*nf + 4*nv + 1*nv+nf   * ( 3*nv+3*nf+3*nv) (vertex coordinates( v1_x, v2_x,..., v1_y, v2_y,), face normals, per-vertex normals)
 	
 	//NofConstrains is unknown for now, because condition2 constrains depends on valence of vertex
 	int NofConstrains = (6 * NumberOfFaces + 5 * NumberOfVertices);
 
-	const int NofUnknows = (6 * NumberOfVertices + 3 * NumberOfFaces);
+	const int NofUnknows = (6 * NumberOfVertices + 3 * NumberOfFaces) + 3 * NumberOfEdges;
 
 
 	//initialize matrix for all vertices
@@ -786,10 +798,22 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 	{
 		initialVertexNormals.row(i) = mMesh.normal(OpenMesh::VertexHandle(i)).normalized();
 	}
+	//initialize matrix for all edges normals
+	Eigen::MatrixXd initialEdgeNormals(NumberOfEdges, 3);
+	for (int i = 0; i < NumberOfEdges; i++)
+	{
+		OpenMesh::SmartEdgeHandle eh(i,&mMesh);
+		Eigen::Vector3d V0 = mMesh.point(eh.v0());
+		Eigen::Vector3d V1 = mMesh.point(eh.v1());
+		Eigen::Vector3d N1 = mMesh.normal(eh.v1());
+		Eigen::Vector3d iniEN = (V0 - V1).cross(N1);
 
+		initialEdgeNormals.row(i) = iniEN.normalized();
+	}
 
-	auto Build_Xvector = [NofUnknows, NumberOfVertices, NumberOfFaces](const Eigen::MatrixXd& Vertexs, const Eigen::MatrixXd& currentFaceNormals,
-		const Eigen::MatrixXd& VertexNormals)->Eigen::VectorXd {
+	auto Build_Xvector = [NofUnknows, NumberOfVertices, NumberOfEdges,NumberOfFaces](const Eigen::MatrixXd& Vertexs, const Eigen::MatrixXd& currentFaceNormals,
+		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals)->Eigen::VectorXd {
+			//vertex coordinates, face normals, per - vertex normals, per edge normal
 			Eigen::VectorXd X_i(NofUnknows, 1);
 
 			X_i.block(0, 0, NumberOfVertices, 1) = Vertexs.block(0, 0, NumberOfVertices, 1);
@@ -798,6 +822,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 
 			const int bas = NumberOfVertices*3;
 			const int bas2 = NumberOfVertices * 3 + NumberOfFaces * 3;
+			const int bas3 = NumberOfVertices * 3 + NumberOfFaces * 3 + NumberOfVertices;
 
 			X_i.block(bas,                     0, NumberOfFaces, 1) = currentFaceNormals.block(0, 0, NumberOfFaces, 1);
 			X_i.block(bas + NumberOfFaces,     0, NumberOfFaces, 1) = currentFaceNormals.block(0, 1, NumberOfFaces, 1);
@@ -807,13 +832,19 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 			X_i.block(bas2 + NumberOfVertices, 0, NumberOfVertices, 1) = VertexNormals.block(0, 1, NumberOfVertices, 1);
 			X_i.block(bas2 + NumberOfVertices * 2, 0, NumberOfVertices, 1) = VertexNormals.block(0, 2, NumberOfVertices, 1);
 
+			//this is edge normal for torsion free  
+
+			X_i.block(bas3, 0, NumberOfEdges, 1) = edgeNormals.block(0, 0, NumberOfEdges, 1);
+			X_i.block(bas3 + NumberOfEdges, 0, NumberOfEdges, 1) = edgeNormals.block(0, 1, NumberOfEdges, 1);
+			X_i.block(bas3 + NumberOfEdges * 2, 0, NumberOfEdges, 1) = edgeNormals.block(0, 2, NumberOfEdges, 1);
+			
 			return X_i;
 	};
 
-	//groupid =0,1,2->vertex coordinates,face normals, per-vertex normals
+	//groupid =0,1,2,3->vertex coordinates,face normals, per-vertex normals, per edge normal for torsion
 	//xyz =0,1,2->x,y,z
-	auto UnknowsAddressTrans = [NumberOfVertices, NumberOfFaces](int groupId, int inner_groupId, int xyz)->int {
-		int result = 0;
+	auto UnknowsAddressTrans = [NumberOfVertices, NumberOfEdges,NumberOfFaces](const int groupId, const int inner_groupId, const int xyz)->int {
+		int result = -1;
 		if (groupId == 0)
 		{
 			result = NumberOfVertices * xyz + inner_groupId;
@@ -829,206 +860,104 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 			int bias = 3 * NumberOfVertices + 3 * NumberOfFaces;
 			result = bias + NumberOfVertices * xyz + inner_groupId;
 		}
-
+		else if (groupId ==3)
+		{
+			int bias = 3 * NumberOfVertices + 3 * NumberOfFaces +3*NumberOfVertices;
+			result = bias + NumberOfEdges * xyz + inner_groupId;
+		}
+		else
+		{
+			abort();
+		}
 		return result;
 	};
 
 
 	//todo: make Jacobi and C a function of only unknown X vector
 	auto BuildJacobiMatandCVectors = [&](const Eigen::MatrixXd& Vertices,const Eigen::MatrixXd& FaceNormals,
-		const Eigen::MatrixXd& VertexNormals) {
+		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals) {
 		const double w_c1 = Paramters[1];
 		const double w_c2 = Paramters[2];
 		const double w_c3 = Paramters[3];
 		const double w_normal = Paramters[4];
 		const double w_fairness = Paramters[5];
-	
+		const double w_torsion = Paramters[6];
 		std::vector<Trip> Jac_tripletList;
-		Jac_tripletList.reserve(NofConstrains * NofUnknows);
+		Jac_tripletList.reserve(NofConstrains * NofUnknows*2);
 
 		std::vector<Trip> C_tripletList;
-		C_tripletList.reserve(NofConstrains * 1);
+		C_tripletList.reserve(NofConstrains * 2);
 		
 		//  todo:Condition1 
-		for (int i = 0; i < 5*NumberOfFaces; i++)
+		for (int i = 0; i <  NumberOfFaces && w_c1>0; i++)
 		{
+			const int Faceindex = i;
+			OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
+			Eigen::Vector3d nf = FaceNormals.row(Faceindex);
+			OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
 
-			if (i>=0&&i<NumberOfFaces)
-			{
-				const int Faceindex = i;
-				OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-				Eigen::Vector3d nf = FaceNormals.row(Faceindex);
-				OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
+			OpenMesh::VertexHandle vh0 = *fv_it;
+			OpenMesh::VertexHandle vh1 = *(++fv_it);
+			OpenMesh::VertexHandle vh2 = *(++fv_it);
+			OpenMesh::VertexHandle vh3 = *(++fv_it);
+			Eigen::Vector3d v0 = Vertices.row(vh0.idx());
+			Eigen::Vector3d  v1 = Vertices.row(vh1.idx());
+			OpenMesh::Mesh::Point v2 = Vertices.row(vh2.idx());
+			OpenMesh::Mesh::Point v3 = Vertices.row(vh3.idx());
 
-				OpenMesh::VertexHandle vh0 = *fv_it;
-				OpenMesh::VertexHandle vh1 = *(++fv_it);
-				OpenMesh::VertexHandle vh2 = *(++fv_it);
-				OpenMesh::VertexHandle vh3 = *(++fv_it);
-				Eigen::Vector3d v0 = Vertices.row(vh0.idx());
-				Eigen::Vector3d  v1 = Vertices.row(vh1.idx());
-				/*OpenMesh::Mesh::Point v2 = Vertices.row(vh2.idx());
-				OpenMesh::Mesh::Point v3 = Vertices.row(vh3.idx());*/
+			const Eigen::Vector3d edge_0 = v0 - v1;
+			const Eigen::Vector3d edge_1= v1 - v2;
+			const Eigen::Vector3d edge_2 = v2 - v3;
+			const Eigen::Vector3d edge_3 = v3 - v0;
 
-				Eigen::Vector3d edge_i = v0 - v1;
-				//vx
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(),0),  w_c1* nf(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 0), -w_c1* nf(0)));
-				//vy
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(), 1), w_c1 * nf(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 1), -w_c1 * nf(1)));
-				//vz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(), 2), w_c1 * nf(2)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 2), -w_c1 * nf(2)));
+			const double C0 = w_c1 * edge_0.dot(nf);
+			const double C1 = w_c1 * edge_1.dot(nf);
+			const double C2 = w_c1 * edge_2.dot(nf);
+			const double C3 = w_c1 * edge_3.dot(nf);
 
-				//nx ,ny,nz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 0), w_c1 * edge_i(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 1), w_c1 * edge_i(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 2), w_c1 * edge_i(2)));
-
-				//Constrain Vectors: Constrain1
-				double C1 = w_c1 * edge_i.dot(nf);
-				C_tripletList.emplace_back(Trip(i, 0, C1));
-
-				continue;
-			}
-			if (i >= NumberOfFaces && i < 2*NumberOfFaces)
-			{
-
-				const int Faceindex = i-NumberOfFaces;
-				OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-				Eigen::Vector3d nf = FaceNormals.row(Faceindex);
-				OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
-
-				OpenMesh::VertexHandle vh0 = *fv_it;
-				OpenMesh::VertexHandle vh1 = *(++fv_it);
-				OpenMesh::VertexHandle vh2 = *(++fv_it);
-				OpenMesh::VertexHandle vh3 = *(++fv_it);
-			
-				Eigen::Vector3d  v1 = Vertices.row(vh1.idx());
-				Eigen::Vector3d v2 = Vertices.row(vh2.idx());
-				Eigen::Vector3d edge_i = v1 - v2;
-
-				//vx
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 0), w_c1 * nf(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 0), -w_c1 * nf(0)));
-				//vy
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 1), w_c1 * nf(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 1), -w_c1 * nf(1)));
-				//vz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh1.idx(), 2), w_c1 * nf(2)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 2), -w_c1 * nf(2)));
-
-				//nx ,ny,nz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 0), w_c1 * edge_i(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 1), w_c1 * edge_i(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 2), w_c1 * edge_i(2)));
+			FillJacobi(i, 0, vh0.idx(), w_c1* nf);
+			FillJacobi(i, 0, vh1.idx(), -w_c1 * nf);
+			//nx ,ny,nz
+			FillJacobi(i, 1, Faceindex, w_c1* edge_0);
+			C_tripletList.emplace_back(Trip(i, 0, C0));
 
 
-				//Constrain Vectors: Constrain1
-				double C1 = w_c1 * edge_i.dot(nf);
-				C_tripletList.emplace_back(Trip(i, 0, C1));
-				continue;
-
-			}
-			if (i >= 2*NumberOfFaces && i < 3*NumberOfFaces)
-			{
-				const int Faceindex = i - 2*NumberOfFaces;
-				OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-				Eigen::Vector3d nf = FaceNormals.row(Faceindex);
-				OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
-
-				OpenMesh::VertexHandle vh0 = *fv_it;
-				OpenMesh::VertexHandle vh1 = *(++fv_it);
-				OpenMesh::VertexHandle vh2 = *(++fv_it);
-				OpenMesh::VertexHandle vh3 = *(++fv_it);
-
-			
-				Eigen::Vector3d v2 = Vertices.row(vh2.idx());
-				Eigen::Vector3d  v3 = Vertices.row(vh3.idx());
-				Eigen::Vector3d edge_i = v2 - v3;
-
-				//vx
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 0), w_c1* nf(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 0), -w_c1 * nf(0)));
-				//vy
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 1), w_c1* nf(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 1), -w_c1 * nf(1)));
-				//vz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh2.idx(), 2), w_c1* nf(2)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 2), -w_c1 * nf(2)));
-
-				//nx ,ny,nz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 0), w_c1* edge_i(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 1), w_c1* edge_i(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 2), w_c1* edge_i(2)));
+			FillJacobi(i + NumberOfFaces, 0, vh1.idx(), w_c1* nf);
+			FillJacobi(i + NumberOfFaces, 0, vh2.idx(), -w_c1 * nf);
+			//nx ,ny,nz
+			FillJacobi(i + NumberOfFaces, 1, Faceindex, w_c1* edge_1);
+			C_tripletList.emplace_back(Trip(i + NumberOfFaces, 0, C1));
 
 
-				//Constrain Vectors: Constrain1
-				double C1 = w_c1 * edge_i.dot(nf);
-				C_tripletList.emplace_back(Trip(i, 0, C1));
-				continue;
-			}
-			if (i >= 3* NumberOfFaces && i < 4*NumberOfFaces)
-			{
-				const int Faceindex = i - 3 * NumberOfFaces;
-				OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-				Eigen::Vector3d nf = FaceNormals.row(Faceindex);
-				OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
-
-				OpenMesh::VertexHandle vh0 = *fv_it;
-				OpenMesh::VertexHandle vh1 = *(++fv_it);
-				OpenMesh::VertexHandle vh2 = *(++fv_it);
-				OpenMesh::VertexHandle vh3 = *(++fv_it);
-		
-				Eigen::Vector3d  v3 = Vertices.row(vh3.idx());
-				Eigen::Vector3d v0 = Vertices.row(vh0.idx());
-				Eigen::Vector3d edge_i = v3 - v0;
-
-				//vx
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 0), w_c1* nf(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(), 0), -w_c1 * nf(0)));
-				//vy
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 1), w_c1* nf(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(), 1), -w_c1 * nf(1)));
-				//vz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh3.idx(), 2), w_c1* nf(2)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(0, vh0.idx(), 2), -w_c1 * nf(2)));
-
-				//nx ,ny,nz
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 0), w_c1* edge_i(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 1), w_c1* edge_i(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, Faceindex, 2), w_c1* edge_i(2)));
+			FillJacobi(i + 2 * NumberOfFaces, 0, vh2.idx(), w_c1* nf);
+			FillJacobi(i + 2 * NumberOfFaces, 0, vh3.idx(), -w_c1 * nf);
+			//nx ,ny,nz
+			FillJacobi(i + 2 * NumberOfFaces, 1, Faceindex, w_c1* edge_2);
+			C_tripletList.emplace_back(Trip(i + 2 * NumberOfFaces, 0, C2));
 
 
-
-				//Constrain Vectors: Constrain1
-				double C1 = w_c1 * edge_i.dot(nf);
-				C_tripletList.emplace_back(Trip(i, 0, C1));
-				continue;
-			}
-
-			//nf**2-1
-			if (i >= 4 * NumberOfFaces && i < 5 * NumberOfFaces) {
-				int faceindex = i - 4 * NumberOfFaces;
-				Eigen::Vector3d nf = FaceNormals.row(faceindex);
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, faceindex, 0), w_normal * 2 * nf(0)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, faceindex, 1), w_normal * 2 * nf(1)));
-				Jac_tripletList.emplace_back(Trip(i, UnknowsAddressTrans(1, faceindex, 2), w_normal * 2 * nf(2)));
+			FillJacobi(i + 3 * NumberOfFaces, 0, vh3.idx(), w_c1* nf);
+			FillJacobi(i + 3 * NumberOfFaces, 0, vh0.idx(), -w_c1 * nf);
+			//nx ,ny,nz
+			FillJacobi(i + 3 * NumberOfFaces, 1, Faceindex, w_c1* edge_3);
+			C_tripletList.emplace_back(Trip(i+3*NumberOfFaces, 0, C1));
 
 
-				//Constrain Vectors: Constrain1
-				double Ci = w_normal *(nf.dot(nf) - 1.0) ;
-				C_tripletList.emplace_back(Trip(i, 0, Ci));
-			}
-
+			//Constrain  nf**2-1
+			double Ci = w_normal * (nf.dot(nf) - 1.0);
+			C_tripletList.emplace_back(Trip(i+4* NumberOfFaces, 0, Ci));
+			FillJacobi(i+4*NumberOfFaces, 1, Faceindex, w_normal * 2 * nf);
 
 		}
+
+			
+
 	
 
 		//  todo:Condition2 
 		int TotalValence = 0;
 		const int ConstrainBias2_1 = 5 * NumberOfFaces;
-		for (int i=0;i<NumberOfVertices;i++)
+		for (int i=0;i<NumberOfVertices && w_c2>0;i++)
 		{
 			OpenMesh::SmartVertexHandle Vi(i, &mMesh);
 			const Eigen::Vector3d  thisPoint = mMesh.point(Vi);
@@ -1039,19 +968,18 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 				const int NeighborVid = (*n_vv_it).idx();
 				const int CostrainId = ConstrainBias2_1 + TotalValence;
 				//vx
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 0), w_c2* vnf(0)));
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0,	i, 0), -w_c2 * vnf(0)));
-				//vy
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 1), w_c2* vnf(1)));
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, i, 1), -w_c2 * vnf(1)));
-				//vz
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 2), w_c2* vnf(2)));
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, i, 2), -w_c2 * vnf(2)));
-
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 0), w_c2* vnf(0)));
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0,	i, 0), -w_c2 * vnf(0)));
+				////vy
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 1), w_c2* vnf(1)));
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, i, 1), -w_c2 * vnf(1)));
+				////vz
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 2), w_c2* vnf(2)));
+				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, i, 2), -w_c2 * vnf(2)));
+				FillJacobi(CostrainId, 0, NeighborVid, w_c2* vnf);
+				FillJacobi(CostrainId, 0, i,-w_c2* vnf);
 				//nx ,ny,nz
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(2, i, 0), w_c2* edge_i(0)));
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(2, i, 1), w_c2* edge_i(1)));
-				Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(2, i, 2), w_c2* edge_i(2)));
+				FillJacobi(CostrainId, 2, i, w_c2* edge_i);
 
 				//Constrain Vectors: Constrain2
 				double C2 = w_c2 * edge_i.dot(vnf);
@@ -1062,15 +990,11 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		}
 
 		const int ConstrainBias2_2 = ConstrainBias2_1 + TotalValence;
-		for (int i=0;i< NumberOfVertices;i++)
+		for (int i=0;i< NumberOfVertices && w_c2>0;i++)
 		{
 			int constrain_id = ConstrainBias2_2 +i;
 			const Eigen::Vector3d  vnf = VertexNormals.row(i);
-
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(2, i, 0), w_normal * 2 * vnf(0)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(2, i, 1), w_normal * 2 * vnf(1)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(2, i, 2), w_normal * 2 * vnf(2)));
-
+			FillJacobi(constrain_id, 2, i, w_normal * 2 * vnf);
 
 			//Constrain Vectors: Constrain1
 			double Ci = w_normal * (vnf.dot(vnf) - 1.0);
@@ -1081,7 +1005,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 
 		//  todo:Condition3 
 		const int ConstrainBias3 = ConstrainBias2_2 + NumberOfVertices;
-		for (int i = 0; i < NumberOfFaces; i++)
+		for (int i = 0; i < NumberOfFaces && w_c3>0; i++)
 		{
 			int constrain_id = ConstrainBias3 + i;
 			const int Faceindex = i;
@@ -1101,31 +1025,21 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 			Eigen::Vector3d  diagonal_2 =  v1 -v3;
 
 
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh0.idx(), 0), w_c3 * 2 * diagonal_1(0)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh0.idx(), 1), w_c3 * 2 * diagonal_1(1)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh0.idx(), 2), w_c3 * 2 * diagonal_1(2)));
-
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh2.idx(), 0), -w_c3 * 2 * diagonal_1(0)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh2.idx(), 1), -w_c3 * 2 * diagonal_1(1)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh2.idx(), 2), -w_c3 * 2 * diagonal_1(2)));
-
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh1.idx(), 0), -w_c3 * 2 * diagonal_2(0)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh1.idx(), 1), -w_c3 * 2 * diagonal_2(1)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh1.idx(), 2), -w_c3 * 2 * diagonal_2(2)));
-	
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh3.idx(), 0), w_c3 * 2 * diagonal_2(0)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh3.idx(), 1), w_c3 * 2 * diagonal_2(1)));
-			Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, vh3.idx(), 2), w_c3 * 2 * diagonal_2(2)));
-
+			Eigen::Vector3d  d1 = w_c3 * 2 * diagonal_1;
+			Eigen::Vector3d  d2 = w_c3 * 2 * diagonal_2;
+			FillJacobi(constrain_id,0, vh0.idx(), d1);
+			FillJacobi(constrain_id,0, vh2.idx(), -d1);
+			FillJacobi(constrain_id, 0, vh1.idx(), -d2);
+			FillJacobi(constrain_id, 0, vh3.idx(), d2);
 			//Constrain Vectors: Constrain1
 			double Ci = w_c3 * (  diagonal_1.dot(diagonal_1) - diagonal_2.dot(diagonal_2));
 
 			C_tripletList.emplace_back(Trip(constrain_id, 0, Ci));
 		}
-		//  todo:Fairness at every vertex, take neighbor two polylines compute difference
+		//  todo:Fairness Condition at every vertex, take neighbor two polylines compute difference
 		int NpolyLineConstrains = 0;
 		const int ConstrainBias_Fairness = 5 * NumberOfFaces + (TotalValence + NumberOfVertices) + NumberOfFaces;
-		for (int i = 0; i < NumberOfVertices; i++)
+		for (int i = 0; i < NumberOfVertices && w_fairness>0; i++)
 		{
 			OpenMesh::SmartVertexHandle Vi(i, &mMesh);
 			const Eigen::Vector3d  thisPoint = mMesh.point(Vi);
@@ -1147,17 +1061,10 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 				//todo: vertical fairness
 				const Eigen::Vector3d delta = nV3 + nV1 - 2 * thisPoint;
 				int constrain_id = ConstrainBias_Fairness + NpolyLineConstrains;
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV3_id, 0), w_fairness * 2 * delta(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV3_id, 1), w_fairness * 2 * delta(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV3_id, 2), w_fairness * 2 * delta(2)));
 
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV1_id, 0), w_fairness * 2 * delta(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV1_id, 1), w_fairness * 2 * delta(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV1_id, 2), w_fairness * 2 * delta(2)));
-
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 0), w_fairness * -4 * delta(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 1), w_fairness * -4 * delta(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 2), w_fairness * -4 * delta(2)));
+				FillJacobi(constrain_id, 0, nV3_id, w_fairness * 2 * delta);
+				FillJacobi(constrain_id, 0, nV1_id, w_fairness * 2 * delta);
+				FillJacobi(constrain_id, 0, i, w_fairness * -4 * delta);
 				//Constrain Vectors: (v3+v1-v)
 				double fairness_v = w_fairness * (delta).dot(delta);
 				C_tripletList.emplace_back(Trip(constrain_id, 0, fairness_v));
@@ -1168,17 +1075,10 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 				//todo: horizontal fairness Constrain Vectors: (v2+v0-v)
 				constrain_id +=1;
 				const Eigen::Vector3d delta2 = nV2 + nV0 - 2 * thisPoint;
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV2_id, 0), w_fairness * 2 * delta2(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV2_id, 1), w_fairness * 2 * delta2(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV2_id, 2), w_fairness * 2 * delta2(2)));
-
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV0_id, 0), w_fairness * 2 * delta2(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV0_id, 1), w_fairness * 2 * delta2(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, nV0_id, 2), w_fairness * 2 * delta2(2)));
-
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 0), w_fairness * -4 * delta2(0)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 1), w_fairness * -4 * delta2(1)));
-				Jac_tripletList.emplace_back(Trip(constrain_id, UnknowsAddressTrans(0, i, 2), w_fairness * -4 * delta2(2)));
+			
+				FillJacobi(constrain_id, 0, nV2_id, w_fairness * 2 * delta2);
+				FillJacobi(constrain_id, 0, nV0_id, w_fairness * 2 * delta2);
+				FillJacobi(constrain_id, 0, i, w_fairness * -4 * delta2);
 				//Constrain Vectors: (v3+v1-v)
 				double fairness_h = w_fairness * (delta2).dot(delta2);
 				C_tripletList.emplace_back(Trip(constrain_id, 0, fairness_h));
@@ -1188,9 +1088,54 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		}
 			
 
+		//todo:torsion condition
+		const int ConstrainBias_torsion = ConstrainBias_Fairness + NpolyLineConstrains;
+		int constrain_id = ConstrainBias_Fairness; 
+		for (int i = 0; i < NumberOfEdges && w_torsion>0; i++)
+		{
+			OpenMesh::SmartEdgeHandle eh(i, &mMesh);
+			Eigen::Vector3d V0 = Vertices.row(eh.v0().idx());
+			Eigen::Vector3d V1 = Vertices.row(eh.v1().idx());
+			Eigen::Vector3d N0 = VertexNormals.row(eh.v0().idx());
+			Eigen::Vector3d N1 = VertexNormals.row(eh.v1().idx());
+			Eigen::Vector3d ei = V0 - V1;
+
+			Eigen::Vector3d edgeN = edgeNormals.row(i);
+
+			double Ci_0 = w_torsion * (edgeN.dot(N0));
+			C_tripletList.emplace_back(Trip(constrain_id, 0, Ci_0));
+			//jacobi to vn
+			FillJacobi(constrain_id, 2, eh.v0().idx(), w_torsion* edgeN);
+			//jacobi to EN
+			FillJacobi(constrain_id, 3, i, w_torsion* N0);
+		
+
+			double Ci_1 = w_torsion * (edgeN.dot(N1));
+			C_tripletList.emplace_back(Trip(constrain_id + 1, 0, Ci_1));
+			//jacobi to vn
+			FillJacobi(constrain_id+1, 2, eh.v1().idx(), w_torsion* edgeN);
+			//jacobi to EN
+			FillJacobi(constrain_id+1, 3, i, w_torsion* N1);
+
+			double Ci_2 = w_torsion * (edgeN.dot(ei));
+			C_tripletList.emplace_back(Trip(constrain_id + 2, 0, Ci_2));
+			//jacobi to vn
+			FillJacobi(constrain_id+2, 0, eh.v0().idx(), w_torsion* edgeN);
+			FillJacobi(constrain_id + 2, 0, eh.v1().idx(), -w_torsion* edgeN);
+			//jacobi to EN
+			FillJacobi(constrain_id+2, 3, i, w_torsion* ei);
+
+
+			double Ci_n = w_normal * (edgeN.dot(edgeN) - 1.0);
+			C_tripletList.emplace_back(Trip(constrain_id + 3, 0, Ci_n));
+			//jacobi to EN
+			FillJacobi(constrain_id + 3, 3, i, w_normal* 2*edgeN);
+			constrain_id += 4;
+		}
+
 
 		//todo: get total constrains
-		NofConstrains = 5 * NumberOfFaces + (TotalValence + NumberOfVertices) + NumberOfFaces + NpolyLineConstrains;
+		NofConstrains = 5 * NumberOfFaces + (TotalValence + NumberOfVertices) + NumberOfFaces + NpolyLineConstrains +4*NumberOfEdges;
 
 
 		return std::tuple(Jac_tripletList, C_tripletList);
@@ -1202,10 +1147,10 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 
 
 
-	Eigen::VectorXd X_o = Build_Xvector(initialVi, initialFaceNormals, initialVertexNormals);
+	Eigen::VectorXd X_o = Build_Xvector(initialVi, initialFaceNormals, initialVertexNormals,initialEdgeNormals);
 	Eigen::VectorXd X_c = X_o;
 
-	auto [JacList, CList] = BuildJacobiMatandCVectors(initialVi,initialFaceNormals, initialVertexNormals);
+	auto [JacList, CList] = BuildJacobiMatandCVectors(initialVi,initialFaceNormals, initialVertexNormals, initialEdgeNormals);
 	SpMat Jac(NofConstrains, NofUnknows);
 	Jac.setFromTriplets(JacList.begin(), JacList.end());
 	SpMat C(NofConstrains, 1);
@@ -1214,24 +1159,35 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 
 
 	SpMat JTJ= (Jac.transpose() * Jac).pruned();
-	double maxCoeff = 0;
+	//this is too slow!
+	//double maxCoeff = 0;
+	//for (int i=0;i<NofUnknows;i++)
+	//{
+	//	maxCoeff = std::max(JTJ.coeffRef(i, i), maxCoeff);
+	//}
+
+	double  lambda=1e-8;
+	//JTJ+lambda*I gurantee not singular
+	std::vector<Trip>i_trips;
+	i_trips.reserve(NofUnknows);
 	for (int i=0;i<NofUnknows;i++)
 	{
-		maxCoeff = std::max(JTJ.coeffRef(i, i), maxCoeff);
+		i_trips.emplace_back(Trip(i,i,lambda));
 	}
-	double  lambda=1e-7;
-	//JTJ+lambda*I gurantee not singular
-	for (int i = 0; i < NofUnknows; i++)
-	{
-		JTJ.coeffRef(i, i) += lambda * maxCoeff;
-	}
+	SpMat SparseIdentity(NofUnknows, NofUnknows);
+	SparseIdentity.setFromTriplets(i_trips.begin(), i_trips.end());
+	SpMat JTJ_I = (JTJ + SparseIdentity).pruned();
+	//for (int i = 0; i < NofUnknows; i++)
+	//{
+	//	JTJ.coeffRef(i, i) += lambda ;
+	//}
 
 	Eigen::MatrixXd b = (-1.0 * Jac.transpose() * C);
 
 	//solving:
 
 	Eigen::SimplicialLDLT<SpMat> solver;//// decomposition failed for SimplicialLDLT
-	solver.compute(JTJ);
+	solver.compute(JTJ_I);
 	if (solver.info() != Eigen::Success) {
 		// decomposition failed
 		abort();
@@ -1248,7 +1204,9 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		v_it != mMesh.vertices_end(); ++v_it)
 	{
 		Eigen::Vector3d Vx = { X_c(UnknowsAddressTrans(0,v_it->idx(),0),0),X_c(UnknowsAddressTrans(0,v_it->idx(),1),0) ,X_c(UnknowsAddressTrans(0,v_it->idx(),2),0) };
+		Eigen::Vector3d NORMAL_x = { X_c(UnknowsAddressTrans(2,v_it->idx(),0),0),X_c(UnknowsAddressTrans(2,v_it->idx(),1),0) ,X_c(UnknowsAddressTrans(2,v_it->idx(),2),0) };
 		mMesh.set_point(*v_it, Vx);
+		mMesh.set_normal(*v_it, Vx);
 	}
 
 
