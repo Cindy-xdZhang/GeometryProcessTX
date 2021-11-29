@@ -17,10 +17,10 @@ typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> Trip;
 
 
-#define FillJacobi(cid,g,i,V3d) do {\
-Jac_tripletList.emplace_back(  Trip(  (cid), (UnknowsAddressTrans(g, i, 0)),  (V3d(0))  )); \
-Jac_tripletList.emplace_back(  Trip( (cid), (UnknowsAddressTrans(g, i, 1)), (V3d(1))   )); \
-Jac_tripletList.emplace_back(  Trip( (cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))   )); } while (0)
+#define FillJacobi(cid,g,i,V3d) if (NotFixed(g,i)){\
+		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 0)), (V3d(0)))); \
+		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 1)), (V3d(1)))); \
+		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))));}
 
 
 size_t Mesh::counter = 0;
@@ -745,7 +745,7 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 
 
 
-void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
+void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixVertexIds) {
     const  int iterationPerClick = Paramters[0];
          
 	const int NumberOfVertices= numVertices();
@@ -760,6 +760,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 	//NofConstrains is unknown for now, because condition2 constrains depends on valence of vertex
 	int NofConstrains = (6 * NumberOfFaces + 5 * NumberOfVertices);
 
+	//vx,vy,vz, fnx,fny,fnz, vnx,vny,vnz, enx,eny,enz
 	const int NofUnknows = (6 * NumberOfVertices + 3 * NumberOfFaces) + 3 * NumberOfEdges;
 
 
@@ -775,11 +776,6 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 	{
 		OpenMesh::FaceHandle fh = mMesh.face_handle(i);
 		OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
-	/*	Eigen::Vector3d n0 = mMesh.normal(*fv_it);
-		Eigen::Vector3d n1 = mMesh.normal(*(++fv_it));
-		Eigen::Vector3d n2 = mMesh.normal(*(++fv_it));
-		Eigen::Vector3d n3 = mMesh.normal(*(++fv_it));	
-		Eigen::Vector3d fnormal = (n0 + n1 + n2 + n3)/4;*/
 
 		Eigen::Vector3d  v0 = mMesh.point(*fv_it) ;
 		Eigen::Vector3d  v1 = mMesh.point( *(++fv_it));
@@ -811,39 +807,24 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		initialEdgeNormals.row(i) = iniEN.normalized();
 	}
 
-	auto Build_Xvector = [NofUnknows, NumberOfVertices, NumberOfEdges,NumberOfFaces](const Eigen::MatrixXd& Vertexs, const Eigen::MatrixXd& currentFaceNormals,
-		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals)->Eigen::VectorXd {
-			//vertex coordinates, face normals, per - vertex normals, per edge normal
-			Eigen::VectorXd X_i(NofUnknows, 1);
+	auto NotFixed = [&FixVertexIds](const int groupId, const int inner_groupId) ->bool {
+		if (groupId == 0)
+		{
+			for (auto& vid : FixVertexIds) {
+				if (inner_groupId == vid)
+				{
+					return false;
+				}
+			}
 
-			X_i.block(0, 0, NumberOfVertices, 1) = Vertexs.block(0, 0, NumberOfVertices, 1);
-			X_i.block(NumberOfVertices, 0, NumberOfVertices, 1) = Vertexs.block(0, 1, NumberOfVertices, 1);
-			X_i.block(NumberOfVertices * 2, 0, NumberOfVertices, 1) = Vertexs.block(0, 2, NumberOfVertices, 1);
-
-			const int bas = NumberOfVertices*3;
-			const int bas2 = NumberOfVertices * 3 + NumberOfFaces * 3;
-			const int bas3 = NumberOfVertices * 3 + NumberOfFaces * 3 + NumberOfVertices;
-
-			X_i.block(bas,                     0, NumberOfFaces, 1) = currentFaceNormals.block(0, 0, NumberOfFaces, 1);
-			X_i.block(bas + NumberOfFaces,     0, NumberOfFaces, 1) = currentFaceNormals.block(0, 1, NumberOfFaces, 1);
-			X_i.block(bas + NumberOfFaces * 2, 0, NumberOfFaces, 1) = currentFaceNormals.block(0, 2, NumberOfFaces, 1);
-
-			X_i.block(bas2, 0, NumberOfVertices, 1) = VertexNormals.block(0, 0, NumberOfVertices, 1);
-			X_i.block(bas2 + NumberOfVertices, 0, NumberOfVertices, 1) = VertexNormals.block(0, 1, NumberOfVertices, 1);
-			X_i.block(bas2 + NumberOfVertices * 2, 0, NumberOfVertices, 1) = VertexNormals.block(0, 2, NumberOfVertices, 1);
-
-			//this is edge normal for torsion free  
-
-			X_i.block(bas3, 0, NumberOfEdges, 1) = edgeNormals.block(0, 0, NumberOfEdges, 1);
-			X_i.block(bas3 + NumberOfEdges, 0, NumberOfEdges, 1) = edgeNormals.block(0, 1, NumberOfEdges, 1);
-			X_i.block(bas3 + NumberOfEdges * 2, 0, NumberOfEdges, 1) = edgeNormals.block(0, 2, NumberOfEdges, 1);
-			
-			return X_i;
+		}
+		return true;
 	};
 
-	//groupid =0,1,2,3->vertex coordinates,face normals, per-vertex normals, per edge normal for torsion
-	//xyz =0,1,2->x,y,z
-	auto UnknowsAddressTrans = [NumberOfVertices, NumberOfEdges,NumberOfFaces](const int groupId, const int inner_groupId, const int xyz)->int {
+	auto UnknowsAddressTrans = [NumberOfVertices, NumberOfEdges, NumberOfFaces](const int groupId, const int inner_groupId, const int xyz)->int {
+
+		//groupid =0,1,2,3->vertex coordinates,face normals, per-vertex normals, per edge normal for torsion
+		//xyz =0,1,2->x,y,z
 		int result = -1;
 		if (groupId == 0)
 		{
@@ -860,9 +841,9 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 			int bias = 3 * NumberOfVertices + 3 * NumberOfFaces;
 			result = bias + NumberOfVertices * xyz + inner_groupId;
 		}
-		else if (groupId ==3)
+		else if (groupId == 3)
 		{
-			int bias = 3 * NumberOfVertices + 3 * NumberOfFaces +3*NumberOfVertices;
+			int bias = 3 * NumberOfVertices + 3 * NumberOfFaces + 3 * NumberOfVertices;
 			result = bias + NumberOfEdges * xyz + inner_groupId;
 		}
 		else
@@ -871,23 +852,53 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		}
 		return result;
 	};
+	//build Build_Xvector
+	Eigen::VectorXd X_o(NofUnknows, 1);
+	{
+	X_o.block(0, 0, NumberOfVertices, 1) = initialVi.block(0, 0, NumberOfVertices, 1);
+	X_o.block(NumberOfVertices, 0, NumberOfVertices, 1) = initialVi.block(0, 1, NumberOfVertices, 1);
+	X_o.block(NumberOfVertices * 2, 0, NumberOfVertices, 1) = initialVi.block(0, 2, NumberOfVertices, 1);
+	const int bas = NumberOfVertices*3;
+	const int bas2 = NumberOfVertices * 3 + NumberOfFaces * 3;
+	const int bas3 = NumberOfVertices * 3 + NumberOfFaces * 3 + NumberOfVertices * 3;
+
+	X_o.block(bas,                     0, NumberOfFaces, 1) = initialFaceNormals.block(0, 0, NumberOfFaces, 1);
+	X_o.block(bas + NumberOfFaces,     0, NumberOfFaces, 1) = initialFaceNormals.block(0, 1, NumberOfFaces, 1);
+	X_o.block(bas + NumberOfFaces * 2, 0, NumberOfFaces, 1) = initialFaceNormals.block(0, 2, NumberOfFaces, 1);
+
+	X_o.block(bas2, 0, NumberOfVertices, 1) = initialVertexNormals.block(0, 0, NumberOfVertices, 1);
+	X_o.block(bas2 + NumberOfVertices, 0, NumberOfVertices, 1) = initialVertexNormals.block(0, 1, NumberOfVertices, 1);
+	X_o.block(bas2 + NumberOfVertices * 2, 0, NumberOfVertices, 1) = initialVertexNormals.block(0, 2, NumberOfVertices, 1);
+		
+
+	//this is edge normal for torsion free  
+
+	X_o.block(bas3, 0, NumberOfEdges, 1) = initialEdgeNormals.block(0, 0, NumberOfEdges, 1);
+	X_o.block(bas3 + NumberOfEdges, 0, NumberOfEdges, 1) = initialEdgeNormals.block(0, 1, NumberOfEdges, 1);
+	X_o.block(bas3 + NumberOfEdges * 2, 0, NumberOfEdges, 1) = initialEdgeNormals.block(0, 2, NumberOfEdges, 1);
+	}
+
+
+
+	
 
 
 	//todo: make Jacobi and C a function of only unknown X vector
 	auto BuildJacobiMatandCVectors = [&](const Eigen::MatrixXd& Vertices,const Eigen::MatrixXd& FaceNormals,
-		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals) {
+		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals,
+		std::vector<Trip>& Jac_tripletList, std::vector<Trip> &C_tripletList) {
 		const double w_c1 = Paramters[1];
 		const double w_c2 = Paramters[2];
 		const double w_c3 = Paramters[3];
 		const double w_normal = Paramters[4];
 		const double w_fairness = Paramters[5];
 		const double w_torsion = Paramters[6];
-		std::vector<Trip> Jac_tripletList;
+		//std::vector<Trip> Jac_tripletList;
 		Jac_tripletList.reserve(NofConstrains * NofUnknows*2);
 
-		std::vector<Trip> C_tripletList;
+		//std::vector<Trip> C_tripletList;
 		C_tripletList.reserve(NofConstrains * 2);
-		
+
 		//  todo:Condition1 
 		for (int i = 0; i <  NumberOfFaces && w_c1>0; i++)
 		{
@@ -911,36 +922,32 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 			const Eigen::Vector3d edge_3 = v3 - v0;
 
 			const double C0 = w_c1 * edge_0.dot(nf);
-			const double C1 = w_c1 * edge_1.dot(nf);
-			const double C2 = w_c1 * edge_2.dot(nf);
-			const double C3 = w_c1 * edge_3.dot(nf);
-
 			FillJacobi(i, 0, vh0.idx(), w_c1* nf);
 			FillJacobi(i, 0, vh1.idx(), -w_c1 * nf);
 			//nx ,ny,nz
 			FillJacobi(i, 1, Faceindex, w_c1* edge_0);
 			C_tripletList.emplace_back(Trip(i, 0, C0));
 
-
+			const double C1 = w_c1 * edge_1.dot(nf);
 			FillJacobi(i + NumberOfFaces, 0, vh1.idx(), w_c1* nf);
 			FillJacobi(i + NumberOfFaces, 0, vh2.idx(), -w_c1 * nf);
 			//nx ,ny,nz
 			FillJacobi(i + NumberOfFaces, 1, Faceindex, w_c1* edge_1);
 			C_tripletList.emplace_back(Trip(i + NumberOfFaces, 0, C1));
 
-
+			const double C2 = w_c1 * edge_2.dot(nf);
 			FillJacobi(i + 2 * NumberOfFaces, 0, vh2.idx(), w_c1* nf);
 			FillJacobi(i + 2 * NumberOfFaces, 0, vh3.idx(), -w_c1 * nf);
 			//nx ,ny,nz
 			FillJacobi(i + 2 * NumberOfFaces, 1, Faceindex, w_c1* edge_2);
 			C_tripletList.emplace_back(Trip(i + 2 * NumberOfFaces, 0, C2));
 
-
+			const double C3 = w_c1 * edge_3.dot(nf);
 			FillJacobi(i + 3 * NumberOfFaces, 0, vh3.idx(), w_c1* nf);
 			FillJacobi(i + 3 * NumberOfFaces, 0, vh0.idx(), -w_c1 * nf);
 			//nx ,ny,nz
 			FillJacobi(i + 3 * NumberOfFaces, 1, Faceindex, w_c1* edge_3);
-			C_tripletList.emplace_back(Trip(i+3*NumberOfFaces, 0, C1));
+			C_tripletList.emplace_back(Trip(i+3*NumberOfFaces, 0, C3));
 
 
 			//Constrain  nf**2-1
@@ -950,9 +957,6 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 
 		}
 
-			
-
-	
 
 		//  todo:Condition2 
 		int TotalValence = 0;
@@ -1138,34 +1142,24 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		NofConstrains = 5 * NumberOfFaces + (TotalValence + NumberOfVertices) + NumberOfFaces + NpolyLineConstrains +4*NumberOfEdges;
 
 
-		return std::tuple(Jac_tripletList, C_tripletList);
+		return; 
 	};
 
 
 
-
-
-
-
-	Eigen::VectorXd X_o = Build_Xvector(initialVi, initialFaceNormals, initialVertexNormals,initialEdgeNormals);
 	Eigen::VectorXd X_c = X_o;
+	std::vector<Trip> JacList;
 
-	auto [JacList, CList] = BuildJacobiMatandCVectors(initialVi,initialFaceNormals, initialVertexNormals, initialEdgeNormals);
+	std::vector<Trip> CList;
+	BuildJacobiMatandCVectors(initialVi,initialFaceNormals, initialVertexNormals, initialEdgeNormals, JacList,CList);
+
+
 	SpMat Jac(NofConstrains, NofUnknows);
 	Jac.setFromTriplets(JacList.begin(), JacList.end());
 	SpMat C(NofConstrains, 1);
 	C.setFromTriplets(CList.begin(), CList.end());
 
-
-
 	SpMat JTJ= (Jac.transpose() * Jac).pruned();
-	//this is too slow!
-	//double maxCoeff = 0;
-	//for (int i=0;i<NofUnknows;i++)
-	//{
-	//	maxCoeff = std::max(JTJ.coeffRef(i, i), maxCoeff);
-	//}
-
 	double  lambda=1e-8;
 	//JTJ+lambda*I gurantee not singular
 	std::vector<Trip>i_trips;
@@ -1206,7 +1200,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters) {
 		Eigen::Vector3d Vx = { X_c(UnknowsAddressTrans(0,v_it->idx(),0),0),X_c(UnknowsAddressTrans(0,v_it->idx(),1),0) ,X_c(UnknowsAddressTrans(0,v_it->idx(),2),0) };
 		Eigen::Vector3d NORMAL_x = { X_c(UnknowsAddressTrans(2,v_it->idx(),0),0),X_c(UnknowsAddressTrans(2,v_it->idx(),1),0) ,X_c(UnknowsAddressTrans(2,v_it->idx(),2),0) };
 		mMesh.set_point(*v_it, Vx);
-		mMesh.set_normal(*v_it, Vx);
+		mMesh.set_normal(*v_it, NORMAL_x);
 	}
 
 

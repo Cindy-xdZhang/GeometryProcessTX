@@ -59,9 +59,7 @@ public:
 
     void LaplacianSmoothing(double lambda, int iterations, bool uniform);
     void OptimizingSmoothing(double lambda, double mu, double gama, double theta, int iterations = 5, bool uniform = false);
-    void OptimizingQuadMesh(std::vector<double> Paramters);
-	
-	
+    void OptimizingQuadMesh(std::vector<double> Paramters, std::vector<int>FixVertexIds);
 private:
 
     OpenMesh::Mesh mMeshOriginal;

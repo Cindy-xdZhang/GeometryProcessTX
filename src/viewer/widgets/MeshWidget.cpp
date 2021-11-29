@@ -945,12 +945,12 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 	        size_t sizeNeighborsMax = 50;
             static size_t iterationPerClick = 5;
 
-            static double w_c1= 0.1;
-            static double w_c2 = 0.1;
-            static double w_c3 = 0.1;
-            static double w_torsion = 0.1;
-            static double w_normal = 0.1;
-            static double w_fairness = 0.01;
+            static double w_c1= 0.01;
+            static double w_c2 = 0.01;
+            static double w_c3 = 0.01;
+            static double w_torsion = 0;
+            static double w_normal = 0.005;
+            static double w_fairness = 0.005;
 	
 
 
@@ -971,13 +971,67 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 			ImGui::InputDouble("w-Normal", &w_normal, 0.01, 0.1, "%.4f");
 			ImGui::InputDouble("w-Fairness", &w_fairness, 0.01, 0.1, "%.4f");
             ImGui::InputDouble("w-torsion", &w_torsion, 0.01, 0.1, "%.4f");
+
+            static int pointCounter = 0;
+			static std::vector<int> arr0(8, -1);
+			ImGui::InputInt4("FixVertices1", arr0.data());
+            ImGui::InputInt4("FixVertices2",  ( (int*)arr0.data() +4) );
+            if (ImGui::Button("fix Selected vertex", ImVec2(-1, 0)))
+			{
+                if (picked_vertex_index>0)
+				{
+					arr0[pointCounter] = picked_vertex_index;
+                    pointCounter = (pointCounter + 1) % 8;
+                }
+            
+			}
+			if (ImGui::Button("clear Fix", ImVec2(-1, 0)))
+			{
+				pointCounter = 0;
+				arr0 = { -1,-1,-1,-1,-1,-1,-1,-1 };
+
+
+			}
+
             if (ImGui::Button("Run Optimization", ImVec2(-1, 0)))
 			{
                 std::vector<double>Parameters = {(double)iterationPerClick,w_c1,w_c2,w_c3,w_normal,w_fairness,w_torsion };
-                mLoader->mesh(index)->OptimizingQuadMesh(Parameters);
+
+                mLoader->mesh(index)->OptimizingQuadMesh(Parameters,arr0);
                 mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 			}
-			
+
+
+            if (ImGui::Button("Show PQ Error", ImVec2(-1, 0))) {
+                auto pmesh=mLoader->mesh(index)->mesh();
+                const int NumOfFaces = pmesh.n_faces();
+                const int NumOfVs = pmesh.n_vertices();
+                Eigen::MatrixXd resError(NumOfVs, 1);
+                for (int i = 0; i < NumOfVs; i++)
+                {
+                    OpenMesh::VertexHandle vh = pmesh.vertex_handle(i);
+                    double PQ_error = 0;
+                    int valence = pmesh.valence(vh);
+                    for (OpenMesh::Mesh::VertexFaceIter vfiter= pmesh.vf_iter(vh); vfiter.is_valid();vfiter++)
+                    {
+						OpenMesh::Mesh::FaceVertexIter fv_it = pmesh.fv_iter(vfiter);
+
+						Eigen::Vector3d  v0 = pmesh.point(*fv_it);
+						Eigen::Vector3d  v1 = pmesh.point(*(++fv_it));
+						Eigen::Vector3d  v2 = pmesh.point(*(++fv_it));
+						Eigen::Vector3d  v3 = pmesh.point(*(++fv_it));
+						Eigen::Vector3d  diagonal_1 = v2 - v0;
+						Eigen::Vector3d  diagonal_2 = v3 - v1;
+						Eigen::Vector3d  midp_diagonal_1 = 0.5 * (v2 + v0);
+						Eigen::Vector3d  midp_diagonal_2 = 0.5 * (v3 + v1);
+						PQ_error += (midp_diagonal_1 - midp_diagonal_2).norm() / (diagonal_1.norm() + diagonal_2.norm());
+                    }
+                    PQ_error /= (double)valence;
+                    resError(i, 0) = PQ_error;
+                }
+                mViewer->data(index).set_data(resError,0,0.05);
+
+            }
 			if (ImGui::Button("Show SupportStructure", ImVec2(-1, 0)))
 			{
                 ViewerData& dataFordraw = mViewer->data(index);
@@ -1011,7 +1065,6 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
         
 			}
 		
-
 			if (ImGui::Button("clear SupportStructure", ImVec2(-1, 0)))
 			{
 				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
@@ -1053,6 +1106,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 				}
 			}
 		
+
         }
 
 
