@@ -941,9 +941,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 #endif
         if (ImGui::CollapsingHeader("Project 4", ImGuiTreeNodeFlags_DefaultOpen))
         { 
+            const static int  MAX_NUMBEROFFIXVERTICES = 16;
             size_t sizeNeighborsMin = 1;
 	        size_t sizeNeighborsMax = 50;
-            static size_t iterationPerClick = 5;
+            static size_t iterationPerClick = 1;
 
             static double w_c1= 0.01;
             static double w_c2 = 0.01;
@@ -951,9 +952,13 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
             static double w_torsion = 0;
             static double w_normal = 0.005;
             static double w_fairness = 0.005;
-	
 
+			static int pointCounter = 0;
+			static std::vector<int> arr0(MAX_NUMBEROFFIXVERTICES, -1);
 
+			static float biasx = 0;
+			static float biasy = 0;
+			static float biasz = 0;
 
             /*ImGui::Checkbox("Uniform", &uniform);
 
@@ -972,27 +977,10 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 			ImGui::InputDouble("w-Fairness", &w_fairness, 0.01, 0.1, "%.4f");
             ImGui::InputDouble("w-torsion", &w_torsion, 0.01, 0.1, "%.4f");
 
-            static int pointCounter = 0;
-			static std::vector<int> arr0(8, -1);
-			ImGui::InputInt4("FixVertices1", arr0.data());
-            ImGui::InputInt4("FixVertices2",  ( (int*)arr0.data() +4) );
-            if (ImGui::Button("fix Selected vertex", ImVec2(-1, 0)))
-			{
-                if (picked_vertex_index>0)
-				{
-					arr0[pointCounter] = picked_vertex_index;
-                    pointCounter = (pointCounter + 1) % 8;
-                }
-            
-			}
-			if (ImGui::Button("clear Fix", ImVec2(-1, 0)))
-			{
-				pointCounter = 0;
-				arr0 = { -1,-1,-1,-1,-1,-1,-1,-1 };
-
-
-			}
-
+ 
+		
+			ImGui::Spacing();
+			ImGui::Spacing();
             if (ImGui::Button("Run Optimization", ImVec2(-1, 0)))
 			{
                 std::vector<double>Parameters = {(double)iterationPerClick,w_c1,w_c2,w_c3,w_normal,w_fairness,w_torsion };
@@ -1000,111 +988,242 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
                 mLoader->mesh(index)->OptimizingQuadMesh(Parameters,arr0);
                 mLoader->mesh(index)->updateViewerData(mViewer->data(index));
 			}
+			ImGui::Spacing();
+			ImGui::Spacing();
+            if (ImGui::CollapsingHeader("Visualization", ImGuiTreeNodeFlags_DefaultOpen)) {
 
+				if (ImGui::Button("Show PQ Error", ImVec2(-1, 0))) {
+					auto pmesh = mLoader->mesh(index)->mesh();
+					const int NumOfFaces = pmesh.n_faces();
+					const int NumOfVs = pmesh.n_vertices();
+					Eigen::MatrixXd resError(NumOfVs, 1);
+					for (int i = 0; i < NumOfVs; i++)
+					{
+						OpenMesh::VertexHandle vh = pmesh.vertex_handle(i);
+						double PQ_error = 0;
+						int valence = pmesh.valence(vh);
+						for (OpenMesh::Mesh::VertexFaceIter vfiter = pmesh.vf_iter(vh); vfiter.is_valid(); vfiter++)
+						{
+							OpenMesh::Mesh::FaceVertexIter fv_it = pmesh.fv_iter(vfiter);
 
-            if (ImGui::Button("Show PQ Error", ImVec2(-1, 0))) {
-                auto pmesh=mLoader->mesh(index)->mesh();
-                const int NumOfFaces = pmesh.n_faces();
-                const int NumOfVs = pmesh.n_vertices();
-                Eigen::MatrixXd resError(NumOfVs, 1);
-                for (int i = 0; i < NumOfVs; i++)
-                {
-                    OpenMesh::VertexHandle vh = pmesh.vertex_handle(i);
-                    double PQ_error = 0;
-                    int valence = pmesh.valence(vh);
-                    for (OpenMesh::Mesh::VertexFaceIter vfiter= pmesh.vf_iter(vh); vfiter.is_valid();vfiter++)
-                    {
-						OpenMesh::Mesh::FaceVertexIter fv_it = pmesh.fv_iter(vfiter);
+							Eigen::Vector3d  v0 = pmesh.point(*fv_it);
+							Eigen::Vector3d  v1 = pmesh.point(*(++fv_it));
+							Eigen::Vector3d  v2 = pmesh.point(*(++fv_it));
+							Eigen::Vector3d  v3 = pmesh.point(*(++fv_it));
+							Eigen::Vector3d edge1 = v1 - v0;
+							Eigen::Vector3d edge2 = v2 - v0;
+							Eigen::Vector3d edge3 = v3 - v0;
+							Eigen::Vector3d faceNormal = edge1.cross(edge2);
+							PQ_error += abs(edge3.dot(faceNormal));
+						}
+						PQ_error /= (double)valence;
+						resError(i, 0) = PQ_error;
+					}
+					mViewer->data(index).set_data(resError, 0, 0.005);
 
-						Eigen::Vector3d  v0 = pmesh.point(*fv_it);
-						Eigen::Vector3d  v1 = pmesh.point(*(++fv_it));
-						Eigen::Vector3d  v2 = pmesh.point(*(++fv_it));
-						Eigen::Vector3d  v3 = pmesh.point(*(++fv_it));
-						Eigen::Vector3d  diagonal_1 = v2 - v0;
-						Eigen::Vector3d  diagonal_2 = v3 - v1;
-						Eigen::Vector3d  midp_diagonal_1 = 0.5 * (v2 + v0);
-						Eigen::Vector3d  midp_diagonal_2 = 0.5 * (v3 + v1);
-						PQ_error += (midp_diagonal_1 - midp_diagonal_2).norm() / (diagonal_1.norm() + diagonal_2.norm());
-                    }
-                    PQ_error /= (double)valence;
-                    resError(i, 0) = PQ_error;
+				}
+                if (ImGui::Button("Show vertex star coplanar error", ImVec2(-1, 0))) {
+					auto pmesh = mLoader->mesh(index)->mesh();
+					const int NumOfFaces = pmesh.n_faces();
+					const int NumOfVs = pmesh.n_vertices();
+
+					Eigen::MatrixXd resError(NumOfVs, 1);
+					for (int i = 0; i < NumOfVs; i++)
+					{
+						const int vid = i;
+						const OpenMesh::VertexHandle vh = pmesh.vertex_handle(i);
+						const Eigen::Vector3d  thisPoint = pmesh.point(vh);
+						if (pmesh.valence(vh) <= 3)
+						{
+							resError(i, 0) = 0;
+							continue;
+						}
+						OpenMesh::Mesh::VertexVertexIter n_vv_it = pmesh.vv_iter(vh);
+						OpenMesh::Mesh::VertexVertexIter n_vv_it_last = n_vv_it;
+
+						double sumAngles = 0.0;
+						Eigen::Vector3d FirstPoint = pmesh.point(*n_vv_it_last);
+
+						for (n_vv_it++; n_vv_it.is_valid(); ++n_vv_it, ++n_vv_it_last) {
+							Eigen::Vector3d LastPoint = pmesh.point(*n_vv_it_last);
+							Eigen::Vector3d NextPoint = pmesh.point(*n_vv_it);
+
+							Eigen::Vector3d  Edge1 = LastPoint - thisPoint;
+							Eigen::Vector3d  Edge2 = NextPoint - thisPoint;
+							double cosEdge = Edge1.dot(Edge2) / (Edge1.norm() * Edge2.norm());
+							double Angle = acos(cosEdge);
+							sumAngles += Angle;
+						}
+						Eigen::Vector3d FinalPoint = pmesh.point(*n_vv_it_last);
+						Eigen::Vector3d  Edge1 = FirstPoint - thisPoint;
+						Eigen::Vector3d  Edge2 = FinalPoint - thisPoint;
+						double cosEdge = Edge1.dot(Edge2) / (Edge1.norm() * Edge2.norm());
+						double Angle = acos(cosEdge);
+						sumAngles += Angle;
+
+						resError(i, 0) = abs(2 * mPI - sumAngles);
+					}
+
+					mViewer->data(index).set_data(resError, 0, 0.005);
                 }
-                mViewer->data(index).set_data(resError,0,0.05);
+				if (ImGui::Button("Show Diagonal Error", ImVec2(-1, 0))) {
+					auto pmesh = mLoader->mesh(index)->mesh();
+					const int NumOfFaces = pmesh.n_faces();
+					const int NumOfVs = pmesh.n_vertices();
 
+					Eigen::MatrixXd resError(NumOfVs, 1);
+					for (int i = 0; i < NumOfVs; i++)
+					{
+						const int vid = i;
+						const OpenMesh::VertexHandle vh = pmesh.vertex_handle(i);
+						const Eigen::Vector3d  thisPoint = pmesh.point(vh);
+					
+						OpenMesh::Mesh::VertexVertexIter n_vv_it = pmesh.vv_iter(vh);
+						OpenMesh::Mesh::VertexVertexIter n_vv_it_last = n_vv_it;
+
+						double sumerrors = 0.0;
+						Eigen::Vector3d FirstPoint = pmesh.point(*n_vv_it_last);
+
+						for (n_vv_it++; n_vv_it.is_valid(); ++n_vv_it, ++n_vv_it_last) {
+							Eigen::Vector3d LastPoint = pmesh.point(*n_vv_it_last);
+							Eigen::Vector3d NextPoint = pmesh.point(*n_vv_it);
+
+							Eigen::Vector3d  Edge1 = LastPoint - thisPoint;
+							Eigen::Vector3d  Edge2 = NextPoint - thisPoint;
+							double cosEdge = Edge1.dot(Edge2) / (Edge1.norm() * Edge2.norm());
+							double Angle = acos(cosEdge);
+                            sumerrors += abs(Angle-0.5*M_PI);
+						}
+
+						Eigen::Vector3d FinalPoint = pmesh.point(*n_vv_it_last);
+						Eigen::Vector3d  Edge1 = FirstPoint - thisPoint;
+						Eigen::Vector3d  Edge2 = FinalPoint - thisPoint;
+						double cosEdge = Edge1.dot(Edge2) / (Edge1.norm() * Edge2.norm());
+						double Angle = acos(cosEdge);
+                        sumerrors += abs(Angle - 0.5 * M_PI);
+
+						resError(i, 0) = sumerrors;
+					}
+
+					mViewer->data(index).set_data(resError, 0, 1.5);
+
+				}
+
+				if (ImGui::Button("Show SupportStructure", ImVec2(-1, 0)))
+				{
+					ViewerData& dataFordraw = mViewer->data(index);
+					const OpenMesh::Mesh& msh = mLoader->mesh(index)->mesh();
+					const int Nedges = msh.n_edges();
+					Eigen::MatrixXd P0(Nedges, 3);
+					Eigen::MatrixXd P1(Nedges, 3);
+					Eigen::MatrixXd P2(Nedges, 3);
+					Eigen::MatrixXd P3(Nedges, 3);
+					Eigen::MatrixXd ColorRed(Nedges, 3);
+					Eigen::MatrixXd ColorGreen(Nedges, 3);
+					for (int i = 0; i < Nedges; i++)
+					{
+						OpenMesh::SmartEdgeHandle eh(i, &(mLoader->mesh(index)->mesh()));
+						Eigen::Vector3d V0 = msh.point(eh.v0());
+						Eigen::Vector3d V1 = msh.point(eh.v1());
+						Eigen::Vector3d N0 = msh.normal(eh.v0());
+						Eigen::Vector3d N1 = msh.normal(eh.v1());
+						P0.row(i) = V0;
+						P1.row(i) = V1;
+						P2.row(i) = V0 + 0.4 * N0.normalized();
+						P3.row(i) = V1 + 0.4 * N1.normalized();
+						ColorRed.row(i) << 0, 0, 1;
+						ColorGreen.row(i) << 0, 1, 0;
+					}
+
+
+					dataFordraw.add_edges(P2, P3, ColorRed);
+					dataFordraw.add_edges(P0, P2, ColorGreen);
+					dataFordraw.add_edges(P1, P3, ColorGreen);
+
+				}
+
+				if (ImGui::Button("clear SupportStructure", ImVec2(-1, 0)))
+				{
+					mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+				}
             }
-			if (ImGui::Button("Show SupportStructure", ImVec2(-1, 0)))
-			{
-                ViewerData& dataFordraw = mViewer->data(index);
-                const OpenMesh::Mesh& msh = mLoader->mesh(index)->mesh();  
-                const int Nedges = msh.n_edges();
-				Eigen::MatrixXd P0(Nedges, 3);
-				Eigen::MatrixXd P1(Nedges, 3);
-				Eigen::MatrixXd P2(Nedges, 3);
-                Eigen::MatrixXd P3(Nedges, 3);
-				Eigen::MatrixXd ColorRed(Nedges, 3);
-				Eigen::MatrixXd ColorGreen(Nedges, 3);
-                for (int i=0;i< Nedges;i++)
-                {
-					OpenMesh::SmartEdgeHandle eh(i, &(mLoader->mesh(index)->mesh()));
-					Eigen::Vector3d V0 = msh.point(eh.v0());
-					Eigen::Vector3d V1 = msh.point(eh.v1());
-					Eigen::Vector3d N0 = msh.normal(eh.v0());
-					Eigen::Vector3d N1 = msh.normal(eh.v1());
-					P0.row(i) = V0 ;
-					P1.row(i) = V1 ;
-                    P2.row(i) = V0 + 0.4 * N0.normalized();
-                    P3.row(i) = V1 + 0.4 * N1.normalized();
-					ColorRed.row(i) << 0, 0, 1;
-					ColorGreen.row(i) << 0, 1, 0;
-                }
-				
-
-                dataFordraw.add_edges(P2, P3, ColorRed);
-                dataFordraw.add_edges(P0, P2, ColorGreen);
-                dataFordraw.add_edges(P1, P3, ColorGreen);
         
-			}
-		
-			if (ImGui::Button("clear SupportStructure", ImVec2(-1, 0)))
-			{
-				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
-			}
 
 
-            static float biasx = 0;
-            static float biasy = 0;
-            static float biasz = 0;
-		
-            ImGui::DragScalar("Steer Vid ", ImGuiDataType_U32, &picked_vertex_index,
-				1.0, NULL, NULL, "%d");
+    
+            ImGui::Spacing();
+            if (ImGui::CollapsingHeader("Manipulation", ImGuiTreeNodeFlags_DefaultOpen)) {
+				ImGui::InputInt4("FixVertices1", arr0.data());
+				ImGui::InputInt4("FixVertices2", ((int*)arr0.data() + 4));
+                ImGui::InputInt4("FixVertices3", ((int*)arr0.data() + 8));
+                ImGui::InputInt4("FixVertices4", ((int*)arr0.data() + 12));
+				if (ImGui::Button("fix Selected vertex", ImVec2(-1, 0)))
+				{
+					if (picked_vertex_index > 0)
+					{
+						arr0[pointCounter] = picked_vertex_index;
+						pointCounter = (pointCounter + 1) % MAX_NUMBEROFFIXVERTICES;
+					}
 
-            if (ImGui::SliderFloat("bias_X", &biasx, -2.0, 2.0)){
-                if (picked_vertex_index > 0) {
-                    Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
-                    Eigen::Vector3d step = { biasx,biasy,biasz };
-                    mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
+				}	if (ImGui::Button("fix Selected face", ImVec2(-1, 0)))
+				{
+					if (picked_face_index > 0)
+					{
+						auto pmesh = mLoader->mesh(index)->mesh();
+						OpenMesh::FaceHandle fh(picked_face_index);
+                        for (OpenMesh::Mesh::FaceVertexIter fv_it = pmesh.fv_iter(fh); fv_it.is_valid(); fv_it++) {
+                            arr0[pointCounter] = fv_it.handle().idx();
+                            pointCounter = (pointCounter + 1) % MAX_NUMBEROFFIXVERTICES;
+                        }
+					}
 
-                    mLoader->mesh(index)->updateViewerData(mViewer->data(index));
-                }
+				}
+				if (ImGui::Button("clear Fix", ImVec2(-1, 0)))
+				{
+					pointCounter = 0;
+					arr0 = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+
+
+				}
+                static bool manFace = true;
+				ImGui::DragScalar("Steer Vertex id ", ImGuiDataType_U32, &picked_vertex_index,
+					1.0, NULL, NULL, "%d");
+				ImGui::DragScalar("Steer face id ", ImGuiDataType_U32, &picked_face_index,
+					1.0, NULL, NULL, "%d");
+                ImGui::Checkbox("manipulate face", &manFace);
+
+				ImGui::DragScalar("iterationPerClick ", ImGuiDataType_U32, &iterationPerClick,
+					1.0, &sizeNeighborsMin, &sizeNeighborsMax, "%d");
+
+                const static float bias_min = -10;
+                const static float bias_max = 10;
+				if (ImGui::DragScalar("bias_X", ImGuiDataType_Float, &biasx, 0.05,&bias_min, &bias_max,"%f")||
+                    ImGui::DragScalar("bias_Y", ImGuiDataType_Float, &biasy, 0.05, &bias_min, &bias_max, "%f") ||
+                    ImGui::DragScalar("bias_Z", ImGuiDataType_Float, &biasz, 0.05, &bias_min, &bias_max, "%f") ) {
+                    if (manFace){
+						if (picked_face_index > 0) {
+                            auto pmesh = mLoader->mesh(index)->mesh();
+                            OpenMesh::FaceHandle fh(picked_face_index);	
+                            for (OpenMesh::Mesh::FaceVertexIter fv_it = pmesh.fv_iter(fh);fv_it.is_valid();fv_it++) {
+                                OpenMesh::VertexHandle vh0 = *fv_it;
+                                Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(vh0);
+								Eigen::Vector3d step = { biasx,biasy,biasz };
+								mLoader->mesh(index)->setVertex(vh0.idx(), p + step);
+                            }
+							mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+						}
+					}
+					else if (picked_vertex_index > 0) {
+							Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
+							Eigen::Vector3d step = { biasx,biasy,biasz };
+							mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
+
+							mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+						}
+				
+				}
             }
-			if (ImGui::SliderFloat("bias_Y", &biasy, -2.0, 2.0)) {
-                if (picked_vertex_index > 0) {  
-                Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
-				Eigen::Vector3d step = { biasx,biasy,biasz };
-				mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
-
-				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
-				}
-			}
-			if (ImGui::SliderFloat("bias_Z", &biasz, -2.0, 2.0)) {
-                if (picked_vertex_index >0) { 
-                Eigen::Vector3d p = mLoader->mesh(index)->Originmesh().point(OpenMesh::VertexHandle(picked_vertex_index));
-				Eigen::Vector3d step = { biasx,biasy,biasz };
-				mLoader->mesh(index)->setVertex(picked_vertex_index, p + step);
-
-				mLoader->mesh(index)->updateViewerData(mViewer->data(index));
-				}
-			}
+		
 		
 
         }

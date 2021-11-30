@@ -17,10 +17,11 @@ typedef Eigen::SparseMatrix<double> SpMat;
 typedef Eigen::Triplet<double> Trip;
 
 
-#define FillJacobi(cid,g,i,V3d) if (NotFixed(g,i)){\
+#define FillJacobi(cid,g,i,V3d) do{\
+		if (notfixed(g,i)){\
 		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 0)), (V3d(0)))); \
 		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 1)), (V3d(1)))); \
-		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))));}
+		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))));	}}while(0)
 
 
 size_t Mesh::counter = 0;
@@ -807,7 +808,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		initialEdgeNormals.row(i) = iniEN.normalized();
 	}
 
-	auto NotFixed = [&FixVertexIds](const int groupId, const int inner_groupId) ->bool {
+	auto notfixed = [&FixVertexIds](const int groupId, const int inner_groupId) ->bool {
 		if (groupId == 0)
 		{
 			for (auto& vid : FixVertexIds) {
@@ -1160,7 +1161,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 	C.setFromTriplets(CList.begin(), CList.end());
 
 	SpMat JTJ= (Jac.transpose() * Jac).pruned();
-	double  lambda=1e-8;
+	double  lambda=1e-6;
 	//JTJ+lambda*I gurantee not singular
 	std::vector<Trip>i_trips;
 	i_trips.reserve(NofUnknows);
