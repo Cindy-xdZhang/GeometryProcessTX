@@ -608,6 +608,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
         }
 
 #endif
+#define  PROJ3
 #ifdef PROJ3
         //collect K neigbors, when K <N1 return N1 neighbors; otherwise return K from N1 AND N2 neighbors 
         auto CollectNeigbors = [](const Mesh* inputMesh, const size_t SizeNeighbor, OpenMesh::Mesh::VertexIter v_it)->std::vector<int> {
@@ -831,7 +832,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 		};
 
 
-		if (ImGui::CollapsingHeader("Project 3", ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Project 3", ImGuiTreeNodeFlags_OpenOnDoubleClick))
 		{
 			static size_t sizeNeighbors = 5;
 			size_t sizeNeighborsMin = 1;
@@ -1192,8 +1193,7 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
 					1.0, NULL, NULL, "%d");
                 ImGui::Checkbox("manipulate face", &manFace);
 
-				ImGui::DragScalar("iterationPerClick ", ImGuiDataType_U32, &iterationPerClick,
-					1.0, &sizeNeighborsMin, &sizeNeighborsMax, "%d");
+		
 
                 const static float bias_min = -10;
                 const static float bias_max = 10;
@@ -1225,7 +1225,11 @@ ImVec4 MeshWidget::draw(bool first, float scaling, float xSize, float ySize, flo
             }
 		
 		
-
+            if (ImGui::Button("Re meshing", ImVec2(-1, 0))) {
+               mLoader->mesh(index)->DiagReMeshing();
+               mLoader->mesh(index)->updateViewerData(mViewer->data(index));
+            
+            }
         }
 
 

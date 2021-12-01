@@ -23,6 +23,10 @@ typedef Eigen::Triplet<double> Trip;
 		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 1)), (V3d(1)))); \
 		Jac_tripletList.emplace_back(Trip((cid), (UnknowsAddressTrans(g, i, 2)), (V3d(2))));	}}while(0)
 
+#define g_VertexCoordinate(fid,Xc)  Eigen::Vector3d( Xc(UnknowsAddressTrans(0, fid, 0),0), Xc(UnknowsAddressTrans(0, fid, 1),0),  Xc(UnknowsAddressTrans(0, fid, 2),0) )
+#define g_FaceNormal(fid,Xc)  Eigen::Vector3d( Xc(UnknowsAddressTrans(1, fid, 0),0),Xc(UnknowsAddressTrans(1, fid, 1),0),Xc(UnknowsAddressTrans(1, fid, 2),0) )
+#define g_VertexNormal(fid,Xc)  Eigen::Vector3d( Xc(UnknowsAddressTrans(2, fid, 0),0),Xc(UnknowsAddressTrans(2, fid, 1),0),Xc(UnknowsAddressTrans(2, fid, 2),0) )
+#define  g_EdgeNormal(fid,Xc)  Eigen::Vector3d( Xc(UnknowsAddressTrans(3, fid, 0),0),Xc(UnknowsAddressTrans(3, fid, 1),0),Xc(UnknowsAddressTrans(3, fid, 2),0) )
 
 size_t Mesh::counter = 0;
 
@@ -747,7 +751,7 @@ void Mesh::OptimizingSmoothing(double lambda, double mu, double gama, double the
 
 
 void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixVertexIds) {
-    const  int iterationPerClick = Paramters[0];
+      int iterationPerClick = Paramters[0];
          
 	const int NumberOfVertices= numVertices();
 	const int NumberOfFaces = mMesh.n_faces();
@@ -885,8 +889,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 
 
 	//todo: make Jacobi and C a function of only unknown X vector
-	auto BuildJacobiMatandCVectors = [&](const Eigen::MatrixXd& Vertices,const Eigen::MatrixXd& FaceNormals,
-		const Eigen::MatrixXd& VertexNormals, const Eigen::MatrixXd& edgeNormals,
+	auto BuildJacobiMatandCVectors = [&](const Eigen::MatrixXd& X_c,
 		std::vector<Trip>& Jac_tripletList, std::vector<Trip> &C_tripletList) {
 		const double w_c1 = Paramters[1];
 		const double w_c2 = Paramters[2];
@@ -895,7 +898,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		const double w_fairness = Paramters[5];
 		const double w_torsion = Paramters[6];
 		//std::vector<Trip> Jac_tripletList;
-		Jac_tripletList.reserve(NofConstrains * NofUnknows*2);
+		Jac_tripletList.reserve(NofConstrains * NofUnknows);
 
 		//std::vector<Trip> C_tripletList;
 		C_tripletList.reserve(NofConstrains * 2);
@@ -905,17 +908,17 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		{
 			const int Faceindex = i;
 			OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-			Eigen::Vector3d nf = FaceNormals.row(Faceindex);
+			Eigen::Vector3d nf = g_FaceNormal(Faceindex,X_c);
 			OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
 
 			OpenMesh::VertexHandle vh0 = *fv_it;
 			OpenMesh::VertexHandle vh1 = *(++fv_it);
 			OpenMesh::VertexHandle vh2 = *(++fv_it);
 			OpenMesh::VertexHandle vh3 = *(++fv_it);
-			Eigen::Vector3d v0 = Vertices.row(vh0.idx());
-			Eigen::Vector3d  v1 = Vertices.row(vh1.idx());
-			OpenMesh::Mesh::Point v2 = Vertices.row(vh2.idx());
-			OpenMesh::Mesh::Point v3 = Vertices.row(vh3.idx());
+			Eigen::Vector3d v0 =  g_VertexCoordinate(vh0.idx(), X_c);
+			Eigen::Vector3d  v1 = g_VertexCoordinate(vh1.idx(), X_c);
+			OpenMesh::Mesh::Point v2 = g_VertexCoordinate(vh2.idx(), X_c);
+			OpenMesh::Mesh::Point v3 = g_VertexCoordinate(vh3.idx(), X_c);
 
 			const Eigen::Vector3d edge_0 = v0 - v1;
 			const Eigen::Vector3d edge_1= v1 - v2;
@@ -965,12 +968,13 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		for (int i=0;i<NumberOfVertices && w_c2>0;i++)
 		{
 			OpenMesh::SmartVertexHandle Vi(i, &mMesh);
-			const Eigen::Vector3d  thisPoint = mMesh.point(Vi);
-			const Eigen::Vector3d  vnf = VertexNormals.row(i);
+			const Eigen::Vector3d  thisPoint =  g_VertexCoordinate( i,X_c);
+
+			const Eigen::Vector3d  vnf =  g_VertexNormal(i, X_c);
 			for (OpenMesh::Mesh::VertexVertexIter n_vv_it = mMesh.vv_iter(Vi); n_vv_it.is_valid(); ++n_vv_it) {
-				const Eigen::Vector3d NeighborPoint = mMesh.point(*n_vv_it);
-				const Eigen::Vector3d  edge_i = NeighborPoint - thisPoint;
 				const int NeighborVid = (*n_vv_it).idx();
+				const Eigen::Vector3d NeighborPoint = g_VertexCoordinate(NeighborVid, X_c);
+				const Eigen::Vector3d  edge_i = NeighborPoint - thisPoint;
 				const int CostrainId = ConstrainBias2_1 + TotalValence;
 				//vx
 				//Jac_tripletList.emplace_back(Trip(CostrainId, UnknowsAddressTrans(0, NeighborVid, 0), w_c2* vnf(0)));
@@ -998,7 +1002,7 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		for (int i=0;i< NumberOfVertices && w_c2>0;i++)
 		{
 			int constrain_id = ConstrainBias2_2 +i;
-			const Eigen::Vector3d  vnf = VertexNormals.row(i);
+			const Eigen::Vector3d  vnf = g_VertexNormal(i, X_c);
 			FillJacobi(constrain_id, 2, i, w_normal * 2 * vnf);
 
 			//Constrain Vectors: Constrain1
@@ -1015,19 +1019,21 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 			int constrain_id = ConstrainBias3 + i;
 			const int Faceindex = i;
 			OpenMesh::FaceHandle fh = mMesh.face_handle(Faceindex);
-			Eigen::Vector3d nf = FaceNormals.row(Faceindex);
+			Eigen::Vector3d nf = g_FaceNormal(Faceindex,X_c);
 			OpenMesh::Mesh::FaceVertexIter fv_it = mMesh.fv_iter(fh);
 			OpenMesh::VertexHandle vh0 = *fv_it;
 			OpenMesh::VertexHandle vh1 = *(++fv_it);
 			OpenMesh::VertexHandle vh2 = *(++fv_it);
 			OpenMesh::VertexHandle vh3 = *(++fv_it);
-			Eigen::Vector3d v0 = Vertices.row(vh0.idx());
-			Eigen::Vector3d v1 = Vertices.row(vh1.idx());
-			Eigen::Vector3d v2 = Vertices.row(vh2.idx());
-			Eigen::Vector3d v3 = Vertices.row(vh3.idx());
 
-			Eigen::Vector3d  diagonal_1 =  v0 -v2;
-			Eigen::Vector3d  diagonal_2 =  v1 -v3;
+			const Eigen::Vector3d v0 = g_VertexCoordinate(vh0.idx(), X_c);
+			const Eigen::Vector3d  v1 = g_VertexCoordinate(vh1.idx(), X_c);
+			const Eigen::Vector3d  v2 = g_VertexCoordinate(vh2.idx(), X_c);
+			const Eigen::Vector3d  v3 = g_VertexCoordinate(vh3.idx(), X_c);
+
+
+			const Eigen::Vector3d  diagonal_1 =  v0 -v2;
+			const Eigen::Vector3d  diagonal_2 =  v1 -v3;
 
 
 			Eigen::Vector3d  d1 = w_c3 * 2 * diagonal_1;
@@ -1047,20 +1053,21 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		for (int i = 0; i < NumberOfVertices && w_fairness>0; i++)
 		{
 			OpenMesh::SmartVertexHandle Vi(i, &mMesh);
-			const Eigen::Vector3d  thisPoint = mMesh.point(Vi);
+			const Eigen::Vector3d  thisPoint = g_VertexCoordinate(i,X_c);
+
 			int Valience = Vi.valence();
 			if (Valience ==4)
 			{
 
 				OpenMesh::Mesh::VertexVertexIter n_vv_it = mMesh.vv_iter(Vi);
-				const int nV0_id = (*n_vv_it).idx();
-				const Eigen::Vector3d nV0 = mMesh.point(*n_vv_it++);
-				const int nV1_id = (*n_vv_it).idx();
-				const Eigen::Vector3d nV1 = mMesh.point(*n_vv_it++);
-				const int nV2_id = (*n_vv_it).idx();
-				const Eigen::Vector3d nV2 = mMesh.point(*n_vv_it++);
-				const int nV3_id = (*n_vv_it).idx();
-				const Eigen::Vector3d nV3 = mMesh.point(*n_vv_it);
+				const int nV0_id = (*n_vv_it).idx(); n_vv_it++;
+				const Eigen::Vector3d nV0 = g_VertexCoordinate(nV0_id, X_c);   
+				const int nV1_id = (*n_vv_it).idx(); n_vv_it++;
+				const Eigen::Vector3d nV1 = g_VertexCoordinate(nV1_id, X_c);
+				const int nV2_id = (*n_vv_it).idx(); n_vv_it++;
+				const Eigen::Vector3d nV2 = g_VertexCoordinate(nV2_id, X_c); 
+				const int nV3_id = (*n_vv_it).idx(); n_vv_it++;
+				const Eigen::Vector3d nV3 = g_VertexCoordinate(nV3_id, X_c);
 	
 
 				//todo: vertical fairness
@@ -1099,13 +1106,13 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 		for (int i = 0; i < NumberOfEdges && w_torsion>0; i++)
 		{
 			OpenMesh::SmartEdgeHandle eh(i, &mMesh);
-			Eigen::Vector3d V0 = Vertices.row(eh.v0().idx());
-			Eigen::Vector3d V1 = Vertices.row(eh.v1().idx());
-			Eigen::Vector3d N0 = VertexNormals.row(eh.v0().idx());
-			Eigen::Vector3d N1 = VertexNormals.row(eh.v1().idx());
+			Eigen::Vector3d V0 =  g_VertexCoordinate((eh.v0().idx()), X_c);
+			Eigen::Vector3d V1 = g_VertexCoordinate((eh.v1().idx()), X_c);
+			Eigen::Vector3d N0 = g_VertexNormal((eh.v0().idx()), X_c);
+			Eigen::Vector3d N1 = g_VertexNormal((eh.v1().idx()), X_c);
 			Eigen::Vector3d ei = V0 - V1;
 
-			Eigen::Vector3d edgeN = edgeNormals.row(i);
+			Eigen::Vector3d edgeN = g_EdgeNormal(i, X_c);
 
 			double Ci_0 = w_torsion * (edgeN.dot(N0));
 			C_tripletList.emplace_back(Trip(constrain_id, 0, Ci_0));
@@ -1148,51 +1155,64 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 
 
 
+
 	Eigen::VectorXd X_c = X_o;
 	std::vector<Trip> JacList;
-
 	std::vector<Trip> CList;
-	BuildJacobiMatandCVectors(initialVi,initialFaceNormals, initialVertexNormals, initialEdgeNormals, JacList,CList);
 
-
-	SpMat Jac(NofConstrains, NofUnknows);
-	Jac.setFromTriplets(JacList.begin(), JacList.end());
-	SpMat C(NofConstrains, 1);
-	C.setFromTriplets(CList.begin(), CList.end());
-
-	SpMat JTJ= (Jac.transpose() * Jac).pruned();
-	double  lambda=1e-6;
-	//JTJ+lambda*I gurantee not singular
 	std::vector<Trip>i_trips;
 	i_trips.reserve(NofUnknows);
-	for (int i=0;i<NofUnknows;i++)
+	double  lambda = 1e-6;
+	for (int i = 0; i < NofUnknows; i++)
 	{
-		i_trips.emplace_back(Trip(i,i,lambda));
+		i_trips.emplace_back(Trip(i, i, lambda));
 	}
 	SpMat SparseIdentity(NofUnknows, NofUnknows);
 	SparseIdentity.setFromTriplets(i_trips.begin(), i_trips.end());
-	SpMat JTJ_I = (JTJ + SparseIdentity).pruned();
-	//for (int i = 0; i < NofUnknows; i++)
-	//{
-	//	JTJ.coeffRef(i, i) += lambda ;
-	//}
+	while (iterationPerClick--)
+	{
+		JacList.clear();
+		CList.clear();
+		BuildJacobiMatandCVectors(X_c, JacList, CList);
 
-	Eigen::MatrixXd b = (-1.0 * Jac.transpose() * C);
+		SpMat Jac(NofConstrains, NofUnknows);
+		Jac.setFromTriplets(JacList.begin(), JacList.end());
+		SpMat C(NofConstrains, 1);
+		C.setFromTriplets(CList.begin(), CList.end());
 
-	//solving:
+		SpMat JTJ = (Jac.transpose() * Jac).pruned();
+		
+		//JTJ+lambda*I gurantee not singular
+	
+		SpMat JTJ_I = (JTJ + SparseIdentity).pruned();
+		//for (int i = 0; i < NofUnknows; i++)
+		//{
+		//	JTJ.coeffRef(i, i) += lambda ;
+		//}
 
-	Eigen::SimplicialLDLT<SpMat> solver;//// decomposition failed for SimplicialLDLT
-	solver.compute(JTJ_I);
-	if (solver.info() != Eigen::Success) {
-		// decomposition failed
-		abort();
+		Eigen::MatrixXd b = (-1.0 * Jac.transpose() * C);
+
+		//solving:
+
+		Eigen::SimplicialLDLT<SpMat> solver;//// decomposition failed for SimplicialLDLT
+		solver.compute(JTJ_I);
+		if (solver.info() != Eigen::Success) {
+			// decomposition failed
+			abort();
+		}
+		Eigen::VectorXd Delta_V = solver.solve(b);
+		if (solver.info() != Eigen::Success) {
+			// solving failed
+			abort();
+		}
+		X_c = Delta_V + X_c;
 	}
-	Eigen::VectorXd Delta_V = solver.solve(b);
-	if (solver.info() != Eigen::Success) {
-		// solving failed
-		abort();
-	}
-	X_c = Delta_V + X_c;
+
+
+	
+	
+
+
 
 	//update
 	for (OpenMesh::Mesh::VertexIter v_it = mMesh.vertices_begin();
@@ -1205,4 +1225,67 @@ void Mesh::OptimizingQuadMesh(std::vector<double> Paramters,std::vector<int>FixV
 	}
 
 
+}
+
+
+//todo:doesn't work
+void Mesh::DiagReMeshing() {
+	OpenMesh::Mesh mesh;
+	
+	std::vector<int>Noface_Vids;
+	std::map<int, int>Old_vid2newVid;
+	std::vector<OpenMesh::Mesh::VertexHandle>  face_vhandles;
+	auto should_add = [](const std::vector<int>& Noface_Vids, int this_vid) ->bool {
+		if (std::find(Noface_Vids.begin(), Noface_Vids.end(), this_vid) != Noface_Vids.end())
+		{
+			return false;
+		}
+		return true;
+	};
+
+	for (OpenMesh::Mesh::VertexIter v_it = mMesh.vertices_begin(); v_it != mMesh.vertices_end(); ++v_it)
+	{
+		int valence = mMesh.valence(*v_it);
+		
+		if (valence >= 3 && should_add(Noface_Vids, v_it->idx()))
+		{
+		
+			/*const Eigen::Vector3d thisV = mMesh.point(*v_it);*/
+
+			face_vhandles.clear();
+			for (OpenMesh::Mesh::VertexVertexCCWIter vv_it = mMesh.vv_ccwbegin(*v_it); vv_it.is_valid(); ++vv_it) {
+				auto it = Old_vid2newVid.find((*vv_it).idx());
+				if (it != Old_vid2newVid.end())
+				{
+					face_vhandles.push_back(OpenMesh::Mesh::VertexHandle(it->second));
+				} 
+				else
+				{
+					const Eigen::Vector3d thisV = mMesh.point(*vv_it);
+					OpenMesh::Mesh::VertexHandle vhandle = mesh.add_vertex(thisV);
+					Old_vid2newVid.insert(std::make_pair((*vv_it).idx(), vhandle.idx()));
+	
+					face_vhandles.push_back(vhandle);
+				}	
+
+				Noface_Vids.emplace_back((*vv_it).idx());
+			}
+		
+
+			mesh.add_face(face_vhandles);
+		}
+	 
+		
+		
+	}
+
+	// request vertex normals, so the mesh reader can use normal information
+	// if available
+	mesh.request_vertex_normals();
+	mesh.request_face_normals();
+	// let the mesh update the normals
+	mesh.update_normals();
+
+	
+	mMesh = mesh;
 }
