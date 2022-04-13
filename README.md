@@ -13,11 +13,11 @@ You can build this application with `cmake`. It has been tested under **Windows*
 5. Constrained Quad mesh   Optimization: co-planarity of vertex-star; co-planarity of quad;supporting structure; othorgonal quad constrain.
 
 ## Some Sample Result: 
-Discrete Gausssian Curvature from jit-fitting![pic](showdemo/1.png).
-B-spline interpolation ![pic](showdemo/2.png).
-Laplacian smoothing ![pic](showdemo/analysis.png).
-Laplacian smoothing ![pic](showdemo/iter50_uniform_0.01.png).
-quad mesh optimization ![pic](showdemo/remeshing.png).
-quad mesh optimization ![pic](showdemo/combined-ondition_png.png).
+Discrete Gausssian Curvature from jit-fitting![pic](showdemo/1.png)
+B-spline interpolation ![pic](showdemo/2.png)
+Laplacian smoothing ![pic](showdemo/analysis.png)
+Laplacian smoothing ![pic](showdemo/iter50_uniform_0.01.png)
+quad mesh optimization ![pic](showdemo/remeshing.png)
+quad mesh optimization ![pic](showdemo/combined-ondition_png.png)
 
 
